@@ -5,6 +5,9 @@ import { Link } from "react-router-dom";
 export default function CadastroUsuario() {
     const [mostrarSenha, setMostrarSenha] = useState(false);
     const [mostrarConfirmar, setMostrarConfirmar] = useState(false);
+    const [loading, setLoading] = useState(false);   
+    const [error, setError] = useState(null);         
+    const [sucesso, setSucesso] = useState(null); 
     const [form, setForm] = useState({
         nome: "",
         email: "",
@@ -12,7 +15,7 @@ export default function CadastroUsuario() {
         confirmarSenha: "",
         torceFlamengo: false,
         assisteOnePiece: false,
-        eDeSousa: false,
+        DeSousa: false,
     });
 
     const handleChange = (e) => {
@@ -20,16 +23,89 @@ export default function CadastroUsuario() {
         setForm({ ...form, [name]: type === "checkbox" ? checked : value });
     };
 
-    const handleSubmit = (e) => {
-    e.preventDefault();
-    if (form.senha !== form.confirmarSenha) {
-        alert("As senhas não coincidem!");
-        return;
-    }
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (form.senha !== form.confirmarSenha) {
+            setError("As senhas não coincidem!");  // 👈 troca o alert
+            setTimeout(() => setError(null), 3000);
+            return;
+        }
+        const {confirmarSenha, ...dadosParaEnviar} = form;
+        const payload = {
+            nome:           dadosParaEnviar.nome,
+            email:          dadosParaEnviar.email,
+            torceFlamengo:  form.torceFlamengo  ? "S" : "N",
+            assisteOnePiece: form.assisteOnePiece ? "S" : "N",
+            deSousa:        form.DeSousa        ? "S" : "N",
+            senha:          dadosParaEnviar.senha,
+        };
+        setLoading(true);
+        setError(null);
+        const URL_API = "http://localhost:8080/cliente/cadastro";
+        try {
+            const response = await fetch(URL_API, {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(payload
+
+                ),
+            });
+            const data = await response.json();
+
+            if(!data.success) {
+                const mensagens = data.erros?.join("\n") ?? data.message ?? "Erro ao cadastrar";
+                throw new Error(mensagens);
+            }
+            setSucesso("Usuário cadastrado com sucesso!");
+            setTimeout(() => setSucesso(null), 3000);
+            console.log("Cliente cadastrado:", data.data);
+        } catch(err) {
+             setError(err.message);
+            setTimeout(() => setError(null), 3000);
+        } finally {
+            setLoading(false)
+        }
     };
 
     return (
       <>
+        {sucesso && (
+            <div style={{
+                position: "fixed",
+                top: "70px",
+                left: "50%",
+                transform: "translateX(-50%)",
+                backgroundColor: "#22c55e",
+                color: "white",
+                padding: "12px 24px",
+                borderRadius: "8px",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                zIndex: 9999,
+                fontWeight: "500",
+                fontSize: "15px",
+            }}>
+                ✅ {sucesso}
+            </div>
+        )}
+
+        {error && (
+            <div style={{
+                position: "fixed",
+                top: "70px",
+                left: "50%",
+                transform: "translateX(-50%)",
+                backgroundColor: "#ef4444",
+                color: "white",
+                padding: "12px 24px",
+                borderRadius: "8px",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                zIndex: 9999,
+                fontWeight: "500",
+                fontSize: "15px",
+            }}>
+                ❌ {error}
+            </div>
+        )}
         <div className="d-flex justify-content-center align-items-center" style={{ minHeight: "90vh", background: "#f0f2f5" }}>
             <div className="bg-white rounded shadow p-4" style={{ width: "100%", maxWidth: "600px" }}>
                 <h4 className="mb-4 fw-bold">Cadastrar Nova Conta</h4>
@@ -94,12 +170,12 @@ export default function CadastroUsuario() {
                             <input
                                 type="checkbox"
                                 className="form-check-input"
-                                name="eDeSousa"
-                                id="eDeSousa"
-                                checked={form.eDeSousa}
+                                name="DeSousa"
+                                id="DeSousa"
+                                checked={form.DeSousa}
                                 onChange={handleChange}
                             />
-                            <label className="form-check-label" htmlFor="eDeSousa">
+                            <label className="form-check-label" htmlFor="DeSousa">
                                 Sou de Sousa - PB 📍
                             </label>
                         </div>
