@@ -30,7 +30,6 @@ export default function CadastroUsuario() {
 
     return (
       <>
-        <Header />
         <div className="d-flex justify-content-center align-items-center" style={{ minHeight: "90vh", background: "#f0f2f5" }}>
             <div className="bg-white rounded shadow p-4" style={{ width: "100%", maxWidth: "600px" }}>
                 <h4 className="mb-4 fw-bold">Cadastrar Nova Conta</h4>
