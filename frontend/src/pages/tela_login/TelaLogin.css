@@ -16,20 +16,15 @@ a {
 }
 
 .login-page {
-  min-height: 100vh;
   background: #f0f2f5;
-  display: flex;
-  flex-direction: column;
 }
 
-/* MAIN */
 .main-content {
-  flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 90vh;
   padding: 20px;
+  min-height: calc(100vh - 120px);
 }
 
 .login-card {
@@ -122,13 +117,22 @@ a {
 .footer {
   background: #fff;
   border-top: 1px solid #d9d9d9;
-  padding: 18px 20px;
+  padding: 6px 10px;
   display: flex;
-  justify-content: center;
-  gap: 28px;
-  flex-wrap: wrap;
-  font-size: 0.95rem;
+  justify-content: center; /* centraliza o grupo */
+  align-items: center;
+  gap: 20px; /* controla o espaço entre eles */
+  font-size: 0.8rem;
   color: #444;
+}
+
+.footer a {
+  color: #000;
+  text-decoration: none;
+}
+
+.footer a:hover {
+  text-decoration: underline;
 }
 
 /* RESPONSIVIDADE */
@@ -146,7 +150,8 @@ a {
   }
 
   .footer {
-    font-size: 0.85rem;
-    gap: 16px;
+    font-size: 0.8rem;
+    gap: 12px;
+    padding: 8px 12px;
   }
 }

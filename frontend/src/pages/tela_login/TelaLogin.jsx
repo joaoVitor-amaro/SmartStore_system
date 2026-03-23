@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { FaEnvelope, FaEye, FaEyeSlash } from "react-icons/fa";
+import { Link } from "react-router-dom";
 import "./TelaLogin.css";
 
 export default function TelaLogin() {
@@ -9,12 +10,17 @@ export default function TelaLogin() {
     <div className="login-page">
       <main className="main-content">
         <section className="login-card">
-          <h1>Fazer Login</h1>
+          <h1>Fazer login</h1>
 
           <form className="login-form">
             <label htmlFor="email">Email</label>
             <div className="input-wrapper">
-              <input id="email" type="email" placeholder="Email" />
+              <input
+                id="email"
+                type="email"
+                placeholder="Digite seu email"
+                autoComplete="email"
+              />
               <span className="input-icon">
                 <FaEnvelope />
               </span>
@@ -25,7 +31,8 @@ export default function TelaLogin() {
               <input
                 id="senha"
                 type={mostrarSenha ? "text" : "password"}
-                placeholder="Senha"
+                placeholder="Digite sua senha"
+                autoComplete="current-password"
               />
               <button
                 type="button"
@@ -40,21 +47,17 @@ export default function TelaLogin() {
               Entrar
             </button>
 
-            <a
-              href="/"
-              className="forgot-password"
-              onClick={(e) => e.preventDefault()}
-            >
+            <Link to="/recuperar-senha" className="forgot-password">
               Esqueceu a senha?
-            </a>
+            </Link>
           </form>
         </section>
       </main>
 
       <footer className="footer">
-        <a href="/">Ajuda</a>
-        <a href="/">Política de Privacidade</a>
-        <a href="/">Fluxos de links e icternas</a>
+        <a href="#">Ajuda</a>
+        <a href="#">PolÃ­tica de Privacidade</a>
+        <a href="#">Termos de Uso</a>
       </footer>
     </div>
   );
