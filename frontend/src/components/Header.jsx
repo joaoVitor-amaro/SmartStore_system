@@ -30,7 +30,7 @@ export default function Header({ categorias = [] }) {
         {/* Login e Cadastrar */}
         <div className="d-flex gap-2">
           <Link to="/login" className="btn btn-outline-primary">Login</Link>
-          <Link to="/cadastro" className="btn btn-primary">Cadastrar</Link>
+          <Link to="/usuario/cadastro" className="btn btn-primary">Cadastrar</Link>
         </div>
 
       </div>
