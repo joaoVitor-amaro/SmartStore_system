@@ -17,6 +17,20 @@
   }
 }
 
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+.app-content-login {
+  min-height: calc(100vh - 73px);
+  display: flex;
+} 
+
+
+
 .hero {
   position: relative;
 
