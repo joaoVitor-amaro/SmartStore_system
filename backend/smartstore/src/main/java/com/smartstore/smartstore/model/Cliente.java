@@ -23,6 +23,15 @@ public class Cliente {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @Column(columnDefinition = "CHAR(1) DEFAULT 'N'")
+    private Character torceFlamengo;
+
+    @Column(columnDefinition = "CHAR(1) DEFAULT 'N'")
+    private Character assisteOnePiece;
+
+    @Column(columnDefinition = "CHAR(1) DEFAULT 'N'")
+    private Character deSousa;
+
     @Column(nullable = false)
     private String senha;
 
@@ -34,4 +43,13 @@ public class Cliente {
 
     @OneToMany(mappedBy = "cliente")
     private List<Compra> compras;
+
+    public Cliente(String nome, String email, Character torceFlamengo, Character assisteOnePiece, Character deSousa, String senha) {
+        this.nome = nome;
+        this.email = email;
+        this.torceFlamengo = torceFlamengo;
+        this.assisteOnePiece = assisteOnePiece;
+        this.deSousa = deSousa;
+        this.senha = senha;
+    }
 }

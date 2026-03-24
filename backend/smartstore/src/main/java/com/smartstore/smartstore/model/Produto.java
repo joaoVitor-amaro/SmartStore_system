@@ -29,6 +29,9 @@ public class Produto {
     @Column(nullable = false)
     private Integer estoque;
 
+    @Column(nullable = false)
+    private String local_fabricado;
+
     private String imagemUrl;
 
     @ManyToOne
@@ -48,5 +51,7 @@ public class Produto {
 
     @OneToMany(mappedBy = "produto")
     private List<ItemCompra> itemCompras;
+
+
 
 }
