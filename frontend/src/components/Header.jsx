@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 
 export default function Header({ categorias = [] }) {
   return (
@@ -29,8 +29,25 @@ export default function Header({ categorias = [] }) {
 
         {/* Login e Cadastrar */}
         <div className="d-flex gap-2">
-          <Link to="/login" className="btn btn-outline-primary">Login</Link>
-          <Link to="/usuario/cadastro" className="btn btn-primary">Cadastrar</Link>
+
+          <NavLink
+            to="/login"
+            className={({ isActive }) =>
+              isActive ? "btn btn-primary" : "btn btn-outline-primary"
+            }
+          >
+            Login
+          </NavLink>
+
+          <NavLink
+            to="/usuario/cadastro"
+            className={({ isActive }) =>
+              isActive ? "btn btn-primary" : "btn btn-outline-primary"
+            }
+          >
+            Cadastrar
+          </NavLink>
+
         </div>
 
       </div>
