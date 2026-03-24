@@ -7,7 +7,10 @@ export default function TelaLogin() {
   const [mostrarSenha, setMostrarSenha] = useState(false);
 
   return (
-    <div className="login-page">
+    <div
+      className="login-page d-flex justify-content-center align-items-center"
+      style={{ minHeight: "90vh", background: "#f0f2f5" }}
+    >
       <main className="main-content">
         <section className="login-card">
           <h1>Fazer login</h1>
@@ -54,11 +57,6 @@ export default function TelaLogin() {
         </section>
       </main>
 
-      <footer className="footer">
-        <a href="#">Ajuda</a>
-        <a href="#">Política de Privacidade</a>
-        <a href="#">Termos de Uso</a>
-      </footer>
     </div>
   );
 }

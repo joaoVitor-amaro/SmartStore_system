@@ -1,0 +1,35 @@
+.home-container {
+  padding: 30px;
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.product-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  text-align: center;
+}
+
+.product-card img {
+  width: 100%;
+  height: 150px;
+  object-fit: contain;
+  display: block;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.product-card h5 {
+  margin-bottom: 10px;
+}
+
+.product-card p {
+  color: #0d6efd;
+  font-weight: bold;
+}
