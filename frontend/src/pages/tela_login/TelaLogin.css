@@ -16,15 +16,17 @@ a {
 }
 
 .login-page {
+  flex: 1;
+  display: flex;
   background: #f0f2f5;
 }
 
 .main-content {
+  flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 20px;
-  min-height: calc(100vh - 120px);
 }
 
 .login-card {
@@ -113,29 +115,6 @@ a {
   font-size: 0.95rem;
 }
 
-/* FOOTER */
-.footer {
-  background: #fff;
-  border-top: 1px solid #d9d9d9;
-  padding: 6px 10px;
-  display: flex;
-  justify-content: center; /* centraliza o grupo */
-  align-items: center;
-  gap: 20px; /* controla o espaço entre eles */
-  font-size: 0.8rem;
-  color: #444;
-}
-
-.footer a {
-  color: #000;
-  text-decoration: none;
-}
-
-.footer a:hover {
-  text-decoration: underline;
-}
-
-/* RESPONSIVIDADE */
 @media (max-width: 768px) {
   .main-content {
     padding: 30px 14px;
@@ -147,11 +126,5 @@ a {
 
   .login-card h1 {
     font-size: 1rem;
-  }
-
-  .footer {
-    font-size: 0.8rem;
-    gap: 12px;
-    padding: 8px 12px;
   }
 }
