@@ -5,12 +5,14 @@ import CadastroUsuario from "./pages/CadastroUsuario";
 import Header from "./components/Header";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Home from "./pages/home/Home";
+import { useCategorias } from "./hooks/useCategorias";
 
 function App() {
+  const {categorias} = useCategorias()
   return (
     <BrowserRouter>
       <div className="app-layout">
-        <Header />
+        <Header categorias={categorias} />
 
         <main className="app-content">
           <Routes>
