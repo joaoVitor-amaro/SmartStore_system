@@ -26,7 +26,7 @@ export default function CadastroUsuario() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (form.senha !== form.confirmarSenha) {
-            setError("As senhas não coincidem!");  // 👈 troca o alert
+            setError("As senhas não coincidem!"); 
             setTimeout(() => setError(null), 3000);
             return;
         }
