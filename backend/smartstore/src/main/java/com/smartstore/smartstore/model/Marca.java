@@ -22,4 +22,8 @@ public class Marca {
 
     @OneToMany(mappedBy = "marca")
     private List<Produto> produtos;
+
+    public Marca(String nome) {
+        this.nome = nome;
+    }
 }
