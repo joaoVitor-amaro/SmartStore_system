@@ -22,6 +22,7 @@ public class ProdutoService {
 
         return produtos.stream()
                 .map(p -> new ProdutoHomeResponseDto(
+                        p.getId(),
                         p.getNome(),
                         p.getPreco(),
                         p.getImagemUrl(),
@@ -30,7 +31,6 @@ public class ProdutoService {
                 .toList();
     }
 
-    // 👇 AGORA DENTRO DA CLASSE
     public ProdutoDetalheResponseDto buscarDetalhePorId(Long id) {
         Produto p = produtoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Produto não encontrado"));

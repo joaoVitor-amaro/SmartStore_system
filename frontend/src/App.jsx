@@ -9,9 +9,9 @@ import { useCategorias } from "./hooks/useCategorias";
 import MyProducts from "./pages/myProducts/MyProducts";
 import DetalheProduto from "./pages/detalheProdutos/DetalheProduto";
 
-
 function App() {
-  const {categorias} = useCategorias()
+  const { categorias } = useCategorias();
+
   return (
     <BrowserRouter>
       <div className="app-layout">
@@ -20,8 +20,10 @@ function App() {
         <main className="app-content">
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/" element={<div>Home</div>} />
-            <Route path="/produto/:id" element={<DetalheProduto />} />
+
+            {/* ROTA CORRIGIDA */}
+            <Route path="/produtos/:id" element={<DetalheProduto />} />
+
             <Route path="/login" element={<TelaLogin />} />
             <Route path="/usuario/cadastro" element={<CadastroUsuario />} />
             <Route path="/meusProdutos" element={<MyProducts />} />
