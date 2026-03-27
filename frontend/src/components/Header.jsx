@@ -47,7 +47,7 @@ export default function Header({ categorias = [] }) {
                   Olá, {localStorage.getItem("nome") || email?.split("@")[0]}
                 </span>
                 <Link
-                  to="/meus-pedidos"
+                  to="/meusProdutos"
                   className="text-muted"
                   style={{ fontSize: "0.75rem" }}
                 >

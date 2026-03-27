@@ -6,6 +6,7 @@ import Header from "./components/Header";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Home from "./pages/home/Home";
 import { useCategorias } from "./hooks/useCategorias";
+import MyProducts from "./pages/myProducts/MyProducts";
 
 function App() {
   const {categorias} = useCategorias()
@@ -20,7 +21,7 @@ function App() {
             <Route path="/" element={<div>Home</div>} />
             <Route path="/login" element={<TelaLogin />} />
             <Route path="/usuario/cadastro" element={<CadastroUsuario />} />
-            <Route path="/cadastro" element={<div>Cadastro</div>} />
+            <Route path="/meusProdutos" element={<MyProducts />} />
           </Routes>
         </main>
       </div>
