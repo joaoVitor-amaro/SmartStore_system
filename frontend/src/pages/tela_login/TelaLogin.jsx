@@ -1,10 +1,39 @@
 import React, { useState } from "react";
 import { FaEnvelope, FaEye, FaEyeSlash } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./TelaLogin.css";
 
 export default function TelaLogin() {
   const [mostrarSenha, setMostrarSenha] = useState(false);
+  const [senha, setSenha] = useState("");
+  const [email, setEmail] = useState("");
+  const [erro, setErro] = useState("");
+  const navigate = useNavigate();
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setErro("");
+
+    try {
+      const response = await fetch("http://localhost:8080/auth/login", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({email, senha}),
+      });
+
+      if(!response) {
+        setErro("Email ou senha inválidos");
+        return;
+      }
+      const data = await response.json();
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("email", data.email);
+      navigate("/");
+      window.location.reload();
+    } catch (err){
+      setErro("Erro ao conectar com o servidor");
+    }
+  }
 
   return (
     <div
@@ -15,7 +44,7 @@ export default function TelaLogin() {
         <section className="login-card">
           <h1>Fazer login</h1>
 
-          <form className="login-form">
+          <form className="login-form" onSubmit={handleSubmit}>
             <label htmlFor="email">Email</label>
             <div className="input-wrapper">
               <input
@@ -23,6 +52,8 @@ export default function TelaLogin() {
                 type="email"
                 placeholder="Digite seu email"
                 autoComplete="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
               <span className="input-icon">
                 <FaEnvelope />
@@ -36,6 +67,8 @@ export default function TelaLogin() {
                 type={mostrarSenha ? "text" : "password"}
                 placeholder="Digite sua senha"
                 autoComplete="current-password"
+                value={senha}
+                onChange={(e) => setSenha(e.target.value)}
               />
               <button
                 type="button"
