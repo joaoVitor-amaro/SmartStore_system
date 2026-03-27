@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import "./Home.css";
+import { Link } from "react-router-dom";
 
 export default function Home() {
   const [produtos, setProdutos] = useState([]);
@@ -32,9 +33,9 @@ export default function Home() {
             </p>
             </div>
 
-            <button className="details-button">
-                Ver detalhes
-            </button>
+            <Link to={`/produto/${p.id}`} className="details-button">
+            Ver detalhes
+            </Link>
             </div>
         ))}
         </div>
