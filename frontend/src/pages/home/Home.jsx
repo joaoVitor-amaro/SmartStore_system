@@ -22,12 +22,12 @@ export default function Home() {
 
             <h5>{p.nome}</h5>
 
-            <p className="product-category">
-                {p.categoriaNome}
-            </p>
-
             <p className="product-price">
                 R$ {Number(p.preco).toFixed(2)}
+            </p>
+
+            <p className="product-category">
+                {p.categoriaNome}
             </p>
 
             <button className="details-button">
