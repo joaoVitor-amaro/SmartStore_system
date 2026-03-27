@@ -1,5 +1,6 @@
 package com.smartstore.smartstore.service;
 
+import com.smartstore.smartstore.dto.ProdutoDetalheResponseDto;
 import com.smartstore.smartstore.dto.ProdutoHomeResponseDto;
 import com.smartstore.smartstore.model.Produto;
 import com.smartstore.smartstore.repository.ProdutoRepository;
@@ -21,11 +22,29 @@ public class ProdutoService {
 
         return produtos.stream()
                 .map(p -> new ProdutoHomeResponseDto(
+                        p.getId(),
                         p.getNome(),
                         p.getPreco(),
                         p.getImagemUrl(),
-                        p.getCategoria().getNome()
+                        p.getCategoria() != null ? p.getCategoria().getNome() : ""
                 ))
                 .toList();
+    }
+
+    public ProdutoDetalheResponseDto buscarDetalhePorId(Long id) {
+        Produto p = produtoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+
+        return new ProdutoDetalheResponseDto(
+                p.getId(),
+                p.getNome(),
+                p.getPreco(),
+                p.getImagemUrl(),
+                p.getCategoria() != null ? p.getCategoria().getNome() : "",
+                p.getDescricao(),
+                p.getLocal_fabricado(),
+                p.getMarca() != null ? p.getMarca().getNome() : "",
+                p.getEstoque()
+        );
     }
 }

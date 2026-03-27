@@ -1,6 +1,8 @@
 package com.smartstore.smartstore.dto;
 
 public class ProdutoHomeResponseDto {
+
+    private Long id;
     private String nome;
     private Double preco;
     private String imagemUrl;
@@ -9,11 +11,20 @@ public class ProdutoHomeResponseDto {
     public ProdutoHomeResponseDto() {
     }
 
-    public ProdutoHomeResponseDto(String nome, Double preco, String imagemUrl, String categoriaNome) {
+    public ProdutoHomeResponseDto(Long id, String nome, Double preco, String imagemUrl, String categoriaNome) {
+        this.id = id;
         this.nome = nome;
         this.preco = preco;
         this.imagemUrl = imagemUrl;
         this.categoriaNome = categoriaNome;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getNome() {
