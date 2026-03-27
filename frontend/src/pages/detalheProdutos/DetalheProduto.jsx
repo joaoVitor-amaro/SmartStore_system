@@ -6,28 +6,51 @@ export default function DetalheProduto() {
   const { id } = useParams();
 
   const [produto, setProduto] = useState(null);
+  const [avaliacoes, setAvaliacoes] = useState(null);
+
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState("");
+
   const [quantidade, setQuantidade] = useState(1);
   const [imagemSelecionada, setImagemSelecionada] = useState("");
 
+  const [novaNota, setNovaNota] = useState(5);
+  const [novoComentario, setNovoComentario] = useState("");
+  const [enviandoAvaliacao, setEnviandoAvaliacao] = useState(false);
+
   useEffect(() => {
-    fetch(`http://localhost:8080/produtos/${id}`)
-      .then((res) => {
-        if (!res.ok) {
+    async function carregarDados() {
+      try {
+        setCarregando(true);
+        setErro("");
+
+        const [resProduto, resAvaliacoes] = await Promise.all([
+          fetch(`http://localhost:8080/produtos/${id}`),
+          fetch(`http://localhost:8080/produtos/${id}/avaliacoes`)
+        ]);
+
+        if (!resProduto.ok) {
           throw new Error("Produto não encontrado.");
         }
-        return res.json();
-      })
-      .then((data) => {
-        setProduto(data);
-        setImagemSelecionada(data.imagemUrl);
+
+        if (!resAvaliacoes.ok) {
+          throw new Error("Erro ao buscar avaliações.");
+        }
+
+        const produtoData = await resProduto.json();
+        const avaliacoesData = await resAvaliacoes.json();
+
+        setProduto(produtoData);
+        setImagemSelecionada(produtoData.imagemUrl);
+        setAvaliacoes(avaliacoesData);
+      } catch (err) {
+        setErro(err.message || "Erro ao carregar produto.");
+      } finally {
         setCarregando(false);
-      })
-      .catch((err) => {
-        setErro(err.message);
-        setCarregando(false);
-      });
+      }
+    }
+
+    carregarDados();
   }, [id]);
 
   function aumentarQuantidade() {
@@ -37,6 +60,68 @@ export default function DetalheProduto() {
   function diminuirQuantidade() {
     if (quantidade > 1) {
       setQuantidade((q) => q - 1);
+    }
+  }
+
+  function renderEstrelas(nota) {
+    const notaArredondada = Math.round(Number(nota) || 0);
+    const cheias = "★".repeat(notaArredondada);
+    const vazias = "☆".repeat(5 - notaArredondada);
+    return cheias + vazias;
+  }
+
+  function larguraBarra(valor, total) {
+    if (!total || total === 0) return "0%";
+    return `${(valor / total) * 100}%`;
+  }
+
+  async function recarregarAvaliacoes() {
+    const resposta = await fetch(`http://localhost:8080/produtos/${id}/avaliacoes`);
+
+    if (!resposta.ok) {
+      throw new Error("Erro ao atualizar avaliações.");
+    }
+
+    const data = await resposta.json();
+    setAvaliacoes(data);
+  }
+
+  async function enviarAvaliacao() {
+    const comentarioLimpo = novoComentario.trim();
+
+    if (!comentarioLimpo) {
+      alert("Escreva um comentário antes de enviar.");
+      return;
+    }
+
+    try {
+      setEnviandoAvaliacao(true);
+
+      const resposta = await fetch(`http://localhost:8080/produtos/${id}/avaliacoes`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          nota: novaNota,
+          comentario: comentarioLimpo,
+          clienteId: 1
+        })
+      });
+
+      if (!resposta.ok) {
+        throw new Error("Erro ao enviar avaliação.");
+      }
+
+      setNovoComentario("");
+      setNovaNota(5);
+
+      await recarregarAvaliacoes();
+    } catch (error) {
+      console.error(error);
+      alert("Não foi possível enviar a avaliação.");
+    } finally {
+      setEnviandoAvaliacao(false);
     }
   }
 
@@ -72,33 +157,16 @@ export default function DetalheProduto() {
           </div>
 
           <div className="miniaturas">
-            <button
-              className="miniatura ativa"
-              onClick={() => setImagemSelecionada(produto.imagemUrl)}
-            >
-              <img src={produto.imagemUrl} alt={produto.nome} />
-            </button>
-
-            <button
-              className="miniatura"
-              onClick={() => setImagemSelecionada(produto.imagemUrl)}
-            >
-              <img src={produto.imagemUrl} alt={produto.nome} />
-            </button>
-
-            <button
-              className="miniatura"
-              onClick={() => setImagemSelecionada(produto.imagemUrl)}
-            >
-              <img src={produto.imagemUrl} alt={produto.nome} />
-            </button>
-
-            <button
-              className="miniatura"
-              onClick={() => setImagemSelecionada(produto.imagemUrl)}
-            >
-              <img src={produto.imagemUrl} alt={produto.nome} />
-            </button>
+            {[1, 2, 3, 4].map((item) => (
+              <button
+                key={item}
+                className={`miniatura ${imagemSelecionada === produto.imagemUrl && item === 1 ? "ativa" : ""}`}
+                onClick={() => setImagemSelecionada(produto.imagemUrl)}
+                type="button"
+              >
+                <img src={produto.imagemUrl} alt={produto.nome} />
+              </button>
+            ))}
           </div>
         </div>
 
@@ -107,9 +175,17 @@ export default function DetalheProduto() {
             <h1>{produto.nome}</h1>
 
             <div className="avaliacao-linha">
-              <span className="estrelas">★★★★☆</span>
-              <span className="nota">4.3</span>
-              <span className="qtd-avaliacoes">(128 avaliações)</span>
+              <span className="estrelas">
+                {renderEstrelas(avaliacoes?.mediaNotas || 0)}
+              </span>
+
+              <span className="nota">
+                {avaliacoes ? Number(avaliacoes.mediaNotas).toFixed(1) : "0.0"}
+              </span>
+
+              <span className="qtd-avaliacoes">
+                ({avaliacoes ? avaliacoes.totalAvaliacoes : 0} avaliações)
+              </span>
             </div>
 
             <p className="preco">
@@ -128,15 +204,15 @@ export default function DetalheProduto() {
           <div className="quantidade-box">
             <label>Quantidade</label>
             <div className="controle-quantidade">
-              <button onClick={diminuirQuantidade}>−</button>
+              <button type="button" onClick={diminuirQuantidade}>−</button>
               <span>{quantidade}</span>
-              <button onClick={aumentarQuantidade}>+</button>
+              <button type="button" onClick={aumentarQuantidade}>+</button>
             </div>
           </div>
 
           <div className="acoes-produto">
-            <button className="btn-carrinho">Adicionar ao Carrinho</button>
-            <button className="btn-comprar">Comprar Agora</button>
+            <button type="button" className="btn-carrinho">Adicionar ao Carrinho</button>
+            <button type="button" className="btn-comprar">Comprar Agora</button>
           </div>
 
           <div className="descricao-box">
@@ -161,53 +237,143 @@ export default function DetalheProduto() {
 
         <div className="resumo-avaliacoes">
           <div className="nota-geral">
-            <span className="nota-grande">4.3</span>
-            <span className="estrelas-grandes">★★★★☆</span>
-            <span>Baseado em 128 avaliações</span>
+            <span className="nota-grande">
+              {avaliacoes ? Number(avaliacoes.mediaNotas).toFixed(1) : "0.0"}
+            </span>
+
+            <span className="estrelas-grandes">
+              {renderEstrelas(avaliacoes?.mediaNotas || 0)}
+            </span>
+
+            <span>
+              Baseado em {avaliacoes ? avaliacoes.totalAvaliacoes : 0} avaliações
+            </span>
           </div>
 
           <div className="barras-avaliacao">
             <div className="barra-linha">
               <span>5 estrelas</span>
-              <div className="barra"><div className="preenchimento w80"></div></div>
+              <div className="barra">
+                <div
+                  className="preenchimento"
+                  style={{
+                    width: larguraBarra(
+                      avaliacoes?.distribuicao?.[0] || 0,
+                      avaliacoes?.totalAvaliacoes || 0
+                    )
+                  }}
+                ></div>
+              </div>
             </div>
+
             <div className="barra-linha">
               <span>4 estrelas</span>
-              <div className="barra"><div className="preenchimento w60"></div></div>
+              <div className="barra">
+                <div
+                  className="preenchimento"
+                  style={{
+                    width: larguraBarra(
+                      avaliacoes?.distribuicao?.[1] || 0,
+                      avaliacoes?.totalAvaliacoes || 0
+                    )
+                  }}
+                ></div>
+              </div>
             </div>
+
             <div className="barra-linha">
               <span>3 estrelas</span>
-              <div className="barra"><div className="preenchimento w35"></div></div>
+              <div className="barra">
+                <div
+                  className="preenchimento"
+                  style={{
+                    width: larguraBarra(
+                      avaliacoes?.distribuicao?.[2] || 0,
+                      avaliacoes?.totalAvaliacoes || 0
+                    )
+                  }}
+                ></div>
+              </div>
             </div>
+
             <div className="barra-linha">
               <span>2 estrelas</span>
-              <div className="barra"><div className="preenchimento w20"></div></div>
+              <div className="barra">
+                <div
+                  className="preenchimento"
+                  style={{
+                    width: larguraBarra(
+                      avaliacoes?.distribuicao?.[3] || 0,
+                      avaliacoes?.totalAvaliacoes || 0
+                    )
+                  }}
+                ></div>
+              </div>
             </div>
+
             <div className="barra-linha">
               <span>1 estrela</span>
-              <div className="barra"><div className="preenchimento w10"></div></div>
+              <div className="barra">
+                <div
+                  className="preenchimento"
+                  style={{
+                    width: larguraBarra(
+                      avaliacoes?.distribuicao?.[4] || 0,
+                      avaliacoes?.totalAvaliacoes || 0
+                    )
+                  }}
+                ></div>
+              </div>
             </div>
           </div>
         </div>
 
+        <div className="form-avaliacao">
+          <h3>Deixe sua avaliação</h3>
+
+          <label htmlFor="nota">Nota</label>
+          <select
+            id="nota"
+            value={novaNota}
+            onChange={(e) => setNovaNota(Number(e.target.value))}
+          >
+            <option value={5}>5 estrelas</option>
+            <option value={4}>4 estrelas</option>
+            <option value={3}>3 estrelas</option>
+            <option value={2}>2 estrelas</option>
+            <option value={1}>1 estrela</option>
+          </select>
+
+          <label htmlFor="comentario">Comentário</label>
+          <textarea
+            id="comentario"
+            value={novoComentario}
+            onChange={(e) => setNovoComentario(e.target.value)}
+            placeholder="Escreva sua opinião sobre o produto"
+          />
+
+          <button
+            type="button"
+            className="btn-enviar-avaliacao"
+            onClick={enviarAvaliacao}
+            disabled={enviandoAvaliacao}
+          >
+            {enviandoAvaliacao ? "Enviando..." : "Enviar avaliação"}
+          </button>
+        </div>
+
         <div className="lista-comentarios">
-          <div className="comentario-card">
-            <h4>João Silva</h4>
-            <span className="estrelas">★★★★★</span>
-            <p>Muito bom, chegou rápido e o produto veio em perfeito estado.</p>
-          </div>
-
-          <div className="comentario-card">
-            <h4>Maria Souza</h4>
-            <span className="estrelas">★★★★☆</span>
-            <p>Gostei bastante. Bom custo-benefício e desempenho muito bom.</p>
-          </div>
-
-          <div className="comentario-card">
-            <h4>Carlos Lima</h4>
-            <span className="estrelas">★★★★☆</span>
-            <p>Produto bonito e funcional. A bateria poderia durar um pouco mais.</p>
-          </div>
+          {avaliacoes?.comentarios?.length > 0 ? (
+            avaliacoes.comentarios.map((comentario) => (
+              <div className="comentario-card" key={comentario.id}>
+                <h4>{comentario.nomeCliente}</h4>
+                <span className="estrelas">{renderEstrelas(comentario.nota)}</span>
+                <p>{comentario.comentario}</p>
+              </div>
+            ))
+          ) : (
+            <p>Ainda não há avaliações para este produto.</p>
+          )}
         </div>
       </div>
     </div>
