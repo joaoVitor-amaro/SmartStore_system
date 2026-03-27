@@ -31,7 +31,7 @@ public class AuthService {
             throw new IllegalArgumentException("Senha inválida");
         }
         String token = jwtService.gerarToken(cliente.getEmail());
-        return new AuthResponseDto(token);
+        return new AuthResponseDto(token, loginDto.getEmail());
     }
 }
 

@@ -1,14 +1,19 @@
 package com.smartstore.smartstore.dto;
 
 public class AuthResponseDto {
-
     private String token;
+    private String email;
 
-    public AuthResponseDto(String token) {
+    public AuthResponseDto(String token, String email) {
         this.token = token;
+        this.email = email;
     }
 
     public String getToken() {
         return token;
+    }
+
+    public String getEmail() {
+        return email;
     }
 }
