@@ -20,6 +20,7 @@ export default function Home() {
             <div className="product-card" key={index}>
             <img src={p.imagemUrl} alt={p.nome} />
 
+            <div className="product-info">
             <h5>{p.nome}</h5>
 
             <p className="product-price">
@@ -29,6 +30,7 @@ export default function Home() {
             <p className="product-category">
                 {p.categoriaNome}
             </p>
+            </div>
 
             <button className="details-button">
                 Ver detalhes
