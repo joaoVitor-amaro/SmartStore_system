@@ -23,7 +23,8 @@ public class ProdutoService {
                 .map(p -> new ProdutoHomeResponseDto(
                         p.getNome(),
                         p.getPreco(),
-                        p.getImagemUrl() // 👈 ESSENCIAL
+                        p.getImagemUrl(),
+                        p.getCategoria().getNome()
                 ))
                 .toList();
     }

@@ -17,14 +17,25 @@ export default function Home() {
 
       <div className="product-grid">
         {produtos.map((p, index) => (
-          <div className="product-card" key={index}>
+            <div className="product-card" key={index}>
             <img src={p.imagemUrl} alt={p.nome} />
 
             <h5>{p.nome}</h5>
-            <p>R$ {Number(p.preco).toFixed(2)}</p>
-          </div>
+
+            <p className="product-category">
+                {p.categoriaNome}
+            </p>
+
+            <p className="product-price">
+                R$ {Number(p.preco).toFixed(2)}
+            </p>
+
+            <button className="details-button">
+                Ver detalhes
+            </button>
+            </div>
         ))}
-      </div>
+        </div>
     </div>
   );
 }

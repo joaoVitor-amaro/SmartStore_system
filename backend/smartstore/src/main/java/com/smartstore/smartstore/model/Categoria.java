@@ -4,8 +4,10 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.List;
+
 
 @Entity
 @Table(name = "categoria")
@@ -21,6 +23,7 @@ public class Categoria {
     private String nome;
 
     @OneToMany(mappedBy = "categoria")
+    @JsonIgnore
     private List<Produto> produtos;
 
     public Categoria(String nome) {
