@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Breadcrumb from "../../components/Breadcrumb/Breadcrumb";
 import "./DetalheProduto.css";
 
@@ -18,6 +19,54 @@ export default function DetalheProduto() {
   const [novaNota, setNovaNota] = useState(5);
   const [novoComentario, setNovoComentario] = useState("");
   const [enviandoAvaliacao, setEnviandoAvaliacao] = useState(false);
+  const [toast, setToast] = useState(null);
+  const navigate = useNavigate();
+
+  function showToast(mensagem, tipo = "sucesso") {
+    setToast({ mensagem, tipo });
+    setTimeout(() => setToast(null), 3000);
+  }
+
+
+  async function adicionarAoCarrinho() {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      showToast("Você precisa está logado", "erro");
+      setTimeout(() => navigate("/login"), 1500);
+      return;
+    }
+
+    try {
+      const res = await fetch("http://localhost:8080/carrinho/adicionar", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          idProduto: produto.id,
+          quantidade: quantidade,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        const mensagemErro = data.errors?.[0] 
+          || data.message 
+          || "Erro ao adicionar ao carrinho.";
+        showToast(mensagemErro, "erro");
+        return;
+      }
+
+      showToast("Produto adicionado ao carrinho!", "sucesso");
+      setTimeout(() => navigate("/carrinho"), 1500);
+    } catch (error) {
+      console.error(error);
+      showToast("Erro ao conectar com o servidor.", "erro");
+    }
+  }
 
   useEffect(() => {
     async function carregarDados() {
@@ -146,6 +195,13 @@ export default function DetalheProduto() {
 
   return (
     <div className="produto-page">
+      {toast && (
+        <div
+          className={`toast-flutuante ${toast.tipo === "erro" ? "toast-erro" : "toast-sucesso"}`}
+        >
+          {toast.mensagem}
+        </div>
+      )}
       <Breadcrumb
         items={[
             { label: "Home", path: "/" },
@@ -221,9 +277,7 @@ export default function DetalheProduto() {
           </div>
 
           <div className="acoes-produto">
-            <Link to="/carrinho">
-                <button type="button" className="btn-carrinho">Adicionar ao Carrinho</button>
-            </Link>
+            <button type="button" className="btn-carrinho" onClick={adicionarAoCarrinho}>Adicionar ao Carrinho</button>
             <button type="button" className="btn-comprar">Comprar Agora</button>
           </div>
 

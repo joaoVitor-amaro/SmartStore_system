@@ -15,7 +15,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleIllegalArgument(IllegalArgumentException ex) {
         ApiResponse<Void> response = new ApiResponse<>(
                 false,
-                "Erro na requisição",
+                ex.getMessage(),
                 null,
                 List.of(ex.getMessage())
         );

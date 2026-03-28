@@ -306,6 +306,34 @@
   padding: 18px;
 }
 
+.toast-flutuante {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 14px 20px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  z-index: 9999;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  animation: fadeIn 0.3s ease;
+}
+
+.toast-sucesso {
+  background: #22c55e;
+  color: #fff;
+}
+
+.toast-erro {
+  background: #ef4444;
+  color: #fff;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 /* ===== RESPONSIVO ===== */
 @media (max-width: 900px) {
   .produto-detalhe-container {
