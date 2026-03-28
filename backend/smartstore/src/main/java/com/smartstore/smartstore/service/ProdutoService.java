@@ -12,6 +12,8 @@ import com.smartstore.smartstore.repository.CategoriaRepository;
 import com.smartstore.smartstore.repository.ClienteRepository;
 import com.smartstore.smartstore.repository.MarcaRepository;
 import com.smartstore.smartstore.repository.ProdutoRepository;
+import com.smartstore.smartstore.dto.MeusProdutosResponseDto;
+import com.smartstore.smartstore.dto.ProdutoUpdateRequestDto;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -127,5 +129,44 @@ public class ProdutoService {
         Files.write(caminho, imagem.getBytes());
         return "http://localhost:8080/imagens/" + nomeArquivo;
 
+    }
+
+    public void excluirProduto(Long id, String email) {
+        Produto produto = produtoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+
+        if (produto.getVendedor() == null || !produto.getVendedor().getEmail().equals(email)) {
+            throw new RuntimeException("Você não tem permissão para excluir este produto");
+        }
+
+        produtoRepository.delete(produto);
+    }
+
+    public void atualizarProduto(Long id, ProdutoUpdateRequestDto dto, String email) {
+        Produto produto = produtoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+
+        if (produto.getVendedor() == null || !produto.getVendedor().getEmail().equals(email)) {
+            throw new RuntimeException("Você não tem permissão para atualizar este produto");
+        }
+
+        produto.setNome(dto.nome());
+        produto.setPreco(dto.preco());
+        produto.setEstoque(dto.estoque());
+
+        produtoRepository.save(produto);
+    }
+
+    public List<MeusProdutosResponseDto> listarProdutosDoVendedor(String email) {
+        return produtoRepository.findByVendedorEmail(email)
+                .stream()
+                .map(produto -> new MeusProdutosResponseDto(
+                        produto.getId(),
+                        produto.getNome(),
+                        produto.getPreco(),
+                        produto.getCategoria().getNome(),
+                        produto.getEstoque()
+                ))
+                .toList();
     }
 }
