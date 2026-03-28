@@ -41,17 +41,25 @@ public class SecurityConfig {
                         .requestMatchers("/imagens/**").permitAll()
 
                         .requestMatchers(
-                                "/api/categorias",
+                                "/marcas",
                                 "/marcas/**",
-                                "/produtos/home",
-                                "/cliente/cadastro",
+                                "/api/marcas",
+                                "/api/marcas/**",
+                                "/categorias",
+                                "/categorias/**",
+                                "/api/categorias",
                                 "/api/categorias/**",
-                                "/produtos/**",
+                                "/produtos/*/avaliacoes",
+                                "/produtos/home",
+                                "/produtos/buscar",
+                                "/produtos/categoria/**",
+                                "/produtos/*",
+                                "/imagens/**",
+                                "/cliente/cadastro",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html"
                         ).permitAll()
-
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(

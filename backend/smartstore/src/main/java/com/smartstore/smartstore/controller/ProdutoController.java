@@ -29,7 +29,6 @@ public class ProdutoController {
         return produtoService.listarProdutosHome();
     }
 
-
     @PostMapping(value = "/cadastro", consumes = "multipart/form-data")
     public ResponseEntity<ApiResponse<ProdutoCreateResponseDto>> cadastrarProduto(
             @ModelAttribute ProdutoCreateRequestDto produtoDto, Authentication authentication) throws Exception {

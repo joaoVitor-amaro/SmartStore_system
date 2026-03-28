@@ -1,7 +1,6 @@
 package com.smartstore.smartstore.controller;
 
-
-import com.smartstore.smartstore.model.Marca;
+import com.smartstore.smartstore.dto.MarcaResponseDto;
 import com.smartstore.smartstore.repository.MarcaRepository;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,14 +11,25 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 public class MarcaController {
 
-    private MarcaRepository marcaRepository;
+    private final MarcaRepository marcaRepository;
 
     public MarcaController(MarcaRepository marcaRepository) {
         this.marcaRepository = marcaRepository;
     }
 
+    @GetMapping
+    public List<MarcaResponseDto> listarTodas() {
+        return marcaRepository.findAll()
+                .stream()
+                .map(marca -> new MarcaResponseDto(marca.getId(), marca.getNome()))
+                .toList();
+    }
+
     @GetMapping("/categoria/{id}")
-    public List<Marca> listarPorCategoria(@PathVariable Long id) {
-        return marcaRepository.findByCategoriaId(id);
+    public List<MarcaResponseDto> listarPorCategoria(@PathVariable Long id) {
+        return marcaRepository.findByCategoriaId(id)
+                .stream()
+                .map(marca -> new MarcaResponseDto(marca.getId(), marca.getNome()))
+                .toList();
     }
 }
