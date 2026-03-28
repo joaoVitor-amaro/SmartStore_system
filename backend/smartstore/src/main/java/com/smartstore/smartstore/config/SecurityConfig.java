@@ -39,7 +39,7 @@ public class SecurityConfig {
                         // GET público, POST exige token
                         .requestMatchers(HttpMethod.GET, "/produtos/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/produtos/cadastro").authenticated()
-
+                        .requestMatchers(HttpMethod.POST, "/carrinho/adicionar").authenticated()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(
