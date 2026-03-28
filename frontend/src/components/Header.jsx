@@ -10,47 +10,51 @@ export default function Header({ categorias = [] }) {
   const [categoriaSelecionada, setCategoriaSelecionada] = useState("");
 
   useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    setTermoBusca(params.get("nome") || "");
-    setCategoriaSelecionada(params.get("categoria") || "");
-  }, [location.search]);
+  const params = new URLSearchParams(location.search);
+  const nome = params.get("nome") || "";
+
+  let categoria = params.get("categoria") || "";
+
+  if (!categoria && location.pathname.startsWith("/categoria/")) {
+    categoria = decodeURIComponent(location.pathname.replace("/categoria/", ""));
+  }
+
+  setTermoBusca(nome);
+  setCategoriaSelecionada(categoria);
+}, [location.search, location.pathname]);
 
   function aplicarFiltros(nome, categoria) {
+  const nomeLimpo = nome.trim();
+  const categoriaLimpa = categoria.trim();
+
+  if (categoriaLimpa) {
     const params = new URLSearchParams();
 
-    if (nome.trim()) {
-      params.set("nome", nome);
+    if (nomeLimpo) {
+      params.set("nome", nomeLimpo);
     }
 
-    if (categoria.trim()) {
-      params.set("categoria", categoria);
-    }
-
-    navigate({
-  pathname: "/",
-  search: params.toString() ? `?${params.toString()}` : ""
-});
+    navigate(`/categoria/${encodeURIComponent(categoriaLimpa)}${params.toString() ? `?${params.toString()}` : ""}`);
+    return;
   }
+
+  const params = new URLSearchParams();
+
+  if (nomeLimpo) {
+    params.set("nome", nomeLimpo);
+  }
+
+  navigate(`/${params.toString() ? `?${params.toString()}` : ""}`);
+}
 
   function handleSubmit(e) {
-    e.preventDefault();
-    aplicarFiltros(termoBusca, categoriaSelecionada);
-  }
+  e.preventDefault();
+  aplicarFiltros(termoBusca, categoriaSelecionada);
+}
 
-  function handleCategoriaChange(e) {
+function handleCategoriaChange(e) {
   const novaCategoria = e.target.value;
   setCategoriaSelecionada(novaCategoria);
-
-  if (!novaCategoria.trim()) {
-    aplicarFiltros(termoBusca, "");
-    return;
-  }
-
-  if (!termoBusca.trim()) {
-    navigate(`/categoria/${encodeURIComponent(novaCategoria)}`);
-    return;
-  }
-
   aplicarFiltros(termoBusca, novaCategoria);
 }
 
