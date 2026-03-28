@@ -49,8 +49,6 @@ export default function MyProducts() {
           <Link to="/cadastrarProduto">
               <button className="btn btn-primary">+ Cadastrar Produto</button>
           </Link>
-          <button className="btn btn-secondary">⬇ Gerar Relatório (PDF)</button>
-          <button className="btn btn-primary">+ Cadastrar Produto</button>
           <button className="btn btn-secondary">Gerar Relatório (PDF)</button>
         </div>
       </div>
