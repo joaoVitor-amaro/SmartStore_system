@@ -20,48 +20,48 @@ public class DataInitializer {
     @PostConstruct
     public void init() {
         if (categoriaRepository.count() == 0) {
-            categoriaRepository.save(new Categoria("ELETRONICOS"));
-            categoriaRepository.save(new Categoria("MOVEIS"));
-            categoriaRepository.save(new Categoria("ROUPAS"));
-            categoriaRepository.save(new Categoria("REMEDIOS"));
-            categoriaRepository.save(new Categoria("ELETRODOMESTICOS"));
-        }
-        if (marcaRepository.count() == 0) {
-            // Marcas de eletrônicos
-            marcaRepository.save(new Marca("Samsung"));
-            marcaRepository.save(new Marca("Apple"));
-            marcaRepository.save(new Marca("Sony"));
-            marcaRepository.save(new Marca("LG"));
-            marcaRepository.save(new Marca("Dell"));
+            Categoria eletronicos = categoriaRepository.save(new Categoria("ELETRONICOS"));
+            Categoria moveis = categoriaRepository.save(new Categoria("MOVEIS"));
+            Categoria roupas = categoriaRepository.save(new Categoria("ROUPAS"));
+            Categoria remedios = categoriaRepository.save(new Categoria("REMEDIOS"));
+            Categoria eletrodomesticos = categoriaRepository.save(new Categoria("ELETRODOMESTICOS"));
+            if (marcaRepository.count() == 0) {
 
-            // Marcas de móveis
-            marcaRepository.save(new Marca("Tok&Stok"));
-            marcaRepository.save(new Marca("Etna"));
-            marcaRepository.save(new Marca("Ikea"));
-            marcaRepository.save(new Marca("Casas Bahia"));
-            marcaRepository.save(new Marca("MadeiraMadeira"));
+                // eletrônicos
+                marcaRepository.save(new Marca("Samsung", eletronicos));
+                marcaRepository.save(new Marca("Apple", eletronicos));
+                marcaRepository.save(new Marca("Sony", eletronicos));
+                marcaRepository.save(new Marca("LG", eletronicos));
+                marcaRepository.save(new Marca("Dell", eletronicos));
 
-            // Marcas de roupas
-            marcaRepository.save(new Marca("Nike"));
-            marcaRepository.save(new Marca("Adidas"));
-            marcaRepository.save(new Marca("Hering"));
-            marcaRepository.save(new Marca("Renner"));
-            marcaRepository.save(new Marca("Levi's"));
+                // móveis
+                marcaRepository.save(new Marca("Tok&Stok", moveis));
+                marcaRepository.save(new Marca("Etna", moveis));
+                marcaRepository.save(new Marca("Ikea", moveis));
+                marcaRepository.save(new Marca("Casas Bahia", moveis));
+                marcaRepository.save(new Marca("MadeiraMadeira", moveis));
 
-            // Marcas de remédios
-            marcaRepository.save(new Marca("Sanofi"));
-            marcaRepository.save(new Marca("Novartis"));
-            marcaRepository.save(new Marca("EMS"));
-            marcaRepository.save(new Marca("Roche"));
-            marcaRepository.save(new Marca("Ache"));
+                // roupas
+                marcaRepository.save(new Marca("Nike", roupas));
+                marcaRepository.save(new Marca("Adidas", roupas));
+                marcaRepository.save(new Marca("Hering", roupas));
+                marcaRepository.save(new Marca("Renner", roupas));
+                marcaRepository.save(new Marca("Levi's", roupas));
 
-            // Marcas de eletrodomésticos
-            marcaRepository.save(new Marca("Brastemp"));
-            marcaRepository.save(new Marca("Electrolux"));
-            marcaRepository.save(new Marca("Philco"));
-            marcaRepository.save(new Marca("Panasonic"));
-            marcaRepository.save(new Marca("Mondial"));
+                // remédios
+                marcaRepository.save(new Marca("Sanofi", remedios));
+                marcaRepository.save(new Marca("Novartis", remedios));
+                marcaRepository.save(new Marca("EMS", remedios));
+                marcaRepository.save(new Marca("Roche", remedios));
+                marcaRepository.save(new Marca("Ache", remedios));
 
+                // eletrodomésticos
+                marcaRepository.save(new Marca("Brastemp", eletrodomesticos));
+                marcaRepository.save(new Marca("Electrolux", eletrodomesticos));
+                marcaRepository.save(new Marca("Philco", eletrodomesticos));
+                marcaRepository.save(new Marca("Panasonic", eletrodomesticos));
+                marcaRepository.save(new Marca("Mondial", eletrodomesticos));
+            }
         }
     }
 }
