@@ -1,9 +1,44 @@
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 export default function Header({ categorias = [] }) {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
   const email = localStorage.getItem("email");
+  const location = useLocation();
+  const [termoBusca, setTermoBusca] = useState("");
+  const [categoriaSelecionada, setCategoriaSelecionada] = useState("");
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    setTermoBusca(params.get("nome") || "");
+    setCategoriaSelecionada(params.get("categoria") || "");
+  }, [location.search]);
+
+  function aplicarFiltros(nome, categoria) {
+    const params = new URLSearchParams();
+
+    if (nome.trim()) {
+      params.set("nome", nome);
+    }
+
+    if (categoria.trim()) {
+      params.set("categoria", categoria);
+    }
+
+    navigate(`/${params.toString() ? `?${params.toString()}` : ""}`);
+  }
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    aplicarFiltros(termoBusca, categoriaSelecionada);
+  }
+
+  function handleCategoriaChange(e) {
+    const novaCategoria = e.target.value;
+    setCategoriaSelecionada(novaCategoria);
+    aplicarFiltros(termoBusca, novaCategoria);
+  }
 
   function handleLogout() {
     localStorage.removeItem("token");
@@ -23,17 +58,23 @@ export default function Header({ categorias = [] }) {
 
         {/* Busca com Categorias integrado */}
         <div className="flex-grow-1 d-flex justify-content-center">
-            <form className="d-flex" style={{ width: "700px" }} onSubmit={(e) => e.preventDefault()}>
-                <select className="form-select w-auto border-end-0 rounded-end-0">
-                <option>Categorias</option>
+            <form className="d-flex" style={{ width: "700px" }} onSubmit={handleSubmit}>
+                <select
+                  className="form-select w-auto border-end-0 rounded-end-0"
+                  value={categoriaSelecionada}
+                  onChange={handleCategoriaChange}
+>
+                <option value="">Categorias</option>
                 {categorias.map((cat) => (
-                    <option key={cat.id}>{cat.nome}</option>
+                    <option key={cat.id} value={cat.nome}>{cat.nome}</option>
                 ))}
                 </select>
                 <input
-                className="form-control rounded-start-0"
-                type="text"
-                placeholder="Buscar produtos..."
+                  className="form-control rounded-start-0"
+                  type="text"
+                  placeholder="Buscar produtos..."
+                  value={termoBusca}
+                  onChange={(e) => setTermoBusca(e.target.value)}
                 />
             </form>
         </div>

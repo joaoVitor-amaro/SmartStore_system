@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import Breadcrumb from "../../components/Breadcrumb/Breadcrumb";
+import Breadcrumb from "../../components/Breadcrumb/Breadcrumb.jsx";
 import "./Home.css";
 
 export default function Home() {

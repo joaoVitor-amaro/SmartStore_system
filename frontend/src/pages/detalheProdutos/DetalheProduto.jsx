@@ -145,17 +145,17 @@ export default function DetalheProduto() {
     <div className="produto-page">
       <Breadcrumb
         items={[
-          { label: "Home", path: "/" },
-          {
+            { label: "Home", path: "/" },
+            {
             label: produto.categoriaNome,
-            path: "#"
-          },
-          {
+            path: `/categoria/${produto.categoriaNome}`
+            },
+            {
             label: produto.nome,
-            path: "#"
-          }
+            path: ""
+            }
         ]}
-      />
+        />
 
       <div className="produto-detalhe-container">
         <div className="produto-galeria-card">
