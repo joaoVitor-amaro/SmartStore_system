@@ -16,7 +16,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    private JwtService jwtService;
+    private final JwtService jwtService;
 
     public SecurityConfig(JwtService jwtService) {
         this.jwtService = jwtService;
@@ -31,35 +31,28 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
-
-                        .requestMatchers(
-                                "/auth/login",
-                                "/cliente/cadastro"
-                        ).permitAll()
-
-                        // liberar imagens
+                        .requestMatchers("/auth/login", "/cliente/cadastro").permitAll()
                         .requestMatchers("/imagens/**").permitAll()
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
 
-                        .requestMatchers(
-                                "/marcas",
-                                "/marcas/**",
-                                "/api/marcas",
-                                "/api/marcas/**",
+                        .requestMatchers(HttpMethod.GET,
                                 "/categorias",
                                 "/categorias/**",
                                 "/api/categorias",
                                 "/api/categorias/**",
-                                "/produtos/*/avaliacoes",
+                                "/marcas",
+                                "/marcas/**",
+                                "/api/marcas",
+                                "/api/marcas/**",
                                 "/produtos/home",
                                 "/produtos/buscar",
                                 "/produtos/categoria/**",
                                 "/produtos/*",
-                                "/imagens/**",
-                                "/cliente/cadastro",
-                                "/v3/api-docs/**",
-                                "/swagger-ui/**",
-                                "/swagger-ui.html"
+                                "/produtos/*/avaliacoes"
                         ).permitAll()
+
+                        .requestMatchers(HttpMethod.POST, "/produtos/cadastro").authenticated()
+
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(
