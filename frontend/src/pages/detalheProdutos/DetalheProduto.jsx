@@ -55,6 +55,9 @@ export default function DetalheProduto() {
   }, [id]);
 
   function aumentarQuantidade() {
+    if(produto.estoque == quantidade) {
+      return;
+    }
     setQuantidade((q) => q + 1);
   }
 
@@ -218,7 +221,9 @@ export default function DetalheProduto() {
           </div>
 
           <div className="acoes-produto">
-            <button type="button" className="btn-carrinho">Adicionar ao Carrinho</button>
+            <Link to="/carrinho">
+                <button type="button" className="btn-carrinho">Adicionar ao Carrinho</button>
+            </Link>
             <button type="button" className="btn-comprar">Comprar Agora</button>
           </div>
 
