@@ -165,7 +165,8 @@ public class ProdutoService {
                         produto.getNome(),
                         produto.getPreco(),
                         produto.getCategoria().getNome(),
-                        produto.getEstoque()
+                        produto.getEstoque(),
+                        produto.getImagemUrl()
                 ))
                 .toList();
     }
