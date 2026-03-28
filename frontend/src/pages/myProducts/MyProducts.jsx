@@ -161,7 +161,13 @@ export default function MyProducts() {
                 <tr key={product.id}>
                   {editingId === product.id ? (
                     <>
-                      <td>??</td>
+                      <td>
+                          <img
+                            src={product.imagemUrl}
+                            alt={product.nome}
+                            style={{ width: 48, height: 48, objectFit: "cover", borderRadius: 8 }}
+                          />
+                      </td>
                       <td>
                         <input
                           className="form-control"
@@ -200,7 +206,13 @@ export default function MyProducts() {
                     </>
                   ) : (
                     <>
-                      <td>??</td>
+                      <td>
+                        <img
+                          src={product.imagemUrl}
+                          alt={product.nome}
+                          style={{ width: 48, height: 48, objectFit: "cover", borderRadius: 8 }}
+                        />
+                      </td>
                       <td>{product.nome}</td>
                       <td>{formatCurrency(product.preco)}</td>
                       <td>{product.categoria}</td>
