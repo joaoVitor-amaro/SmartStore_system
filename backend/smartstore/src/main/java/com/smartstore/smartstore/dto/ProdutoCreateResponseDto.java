@@ -9,7 +9,7 @@ public class ProdutoCreateResponseDto {
     private Integer estoque;
     private String fabricadoEm;
 
-    private MultipartFile imagemUrl;
+    private String imagemUrl;
 
     private Long marcaId;
     private Long categoriaId;
@@ -25,7 +25,7 @@ public class ProdutoCreateResponseDto {
         this.preco = produtoDto.getPreco();
         this.estoque = produtoDto.getEstoque();
         this.fabricadoEm = produtoDto.getFabricadoEm();
-        this.imagemUrl = produtoDto.getImagem();
+        this.imagemUrl = produtoDto.getImagem() != null ? produtoDto.getImagem().getOriginalFilename() : null;
         this.marcaId = produtoDto.getMarcaId();
         this.categoriaId = produtoDto.getCategoriaId();
         this.email = emai;
@@ -51,7 +51,7 @@ public class ProdutoCreateResponseDto {
         return fabricadoEm;
     }
 
-    public MultipartFile getImagemUrl() {
+    public String getImagemUrl() {
         return imagemUrl;
     }
 
