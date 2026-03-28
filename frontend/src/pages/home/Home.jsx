@@ -1,17 +1,36 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import Breadcrumb from "../../components/Breadcrumb/Breadcrumb.jsx";
 import "./Home.css";
 
 export default function Home() {
   const [produtos, setProdutos] = useState([]);
+  const location = useLocation();
 
   useEffect(() => {
-    fetch("http://localhost:8080/produtos/home")
-      .then((res) => res.json())
-      .then((data) => setProdutos(data))
-      .catch((err) => console.error(err));
-  }, []);
+  const params = new URLSearchParams(location.search);
+  const nome = params.get("nome") || "";
+  const categoria = params.get("categoria") || "";
+
+  const queryParams = new URLSearchParams();
+
+  if (nome.trim()) {
+    queryParams.append("nome", nome);
+  }
+
+  if (categoria.trim()) {
+    queryParams.append("categoria", categoria);
+  }
+
+  const urlFinal = queryParams.toString()
+    ? `http://localhost:8080/produtos/buscar?${queryParams.toString()}`
+    : "http://localhost:8080/produtos/home";
+
+  fetch(urlFinal)
+    .then((res) => res.json())
+    .then((data) => setProdutos(data))
+    .catch((err) => console.error(err));
+}, [location.search]);
 
   return (
     <div className="home-container">
