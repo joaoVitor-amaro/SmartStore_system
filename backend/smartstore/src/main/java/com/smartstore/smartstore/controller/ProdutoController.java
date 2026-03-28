@@ -41,6 +41,8 @@ public class ProdutoController {
                 null
         );
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
     @GetMapping("/categoria/{nome}")
     public List<ProdutoHomeResponseDto> listarPorCategoria(@PathVariable String nome) {
         return produtoService.listarProdutosPorCategoria(nome);
