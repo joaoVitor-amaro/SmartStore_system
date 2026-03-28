@@ -7,6 +7,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Home from "./pages/home/Home";
 import { useCategorias } from "./hooks/useCategorias";
 import MyProducts from "./pages/myProducts/MyProducts";
+import CadastrarProduto from "./pages/cadastrarProduto/CadastrarProduto";
 
 function App() {
   const {categorias} = useCategorias()
@@ -22,6 +23,7 @@ function App() {
             <Route path="/login" element={<TelaLogin />} />
             <Route path="/usuario/cadastro" element={<CadastroUsuario />} />
             <Route path="/meusProdutos" element={<MyProducts />} />
+            <Route path="/cadastrarProduto" element={<CadastrarProduto categorias={categorias} />} />
           </Routes>
         </main>
       </div>
