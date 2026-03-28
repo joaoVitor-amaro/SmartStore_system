@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import Breadcrumb from "../../components/Breadcrumb/Breadcrumb";  
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -45,6 +46,10 @@ export default function MyProducts() {
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 gap-2">
         <h2>Produtos Cadastrados</h2>
         <div className="d-flex gap-2 flex-wrap">
+          <Link to="/cadastrarProduto">
+              <button className="btn btn-primary">+ Cadastrar Produto</button>
+          </Link>
+          <button className="btn btn-secondary">⬇ Gerar Relatório (PDF)</button>
           <button className="btn btn-primary">+ Cadastrar Produto</button>
           <button className="btn btn-secondary">Gerar Relatório (PDF)</button>
         </div>

@@ -8,6 +8,7 @@ import Home from "./pages/home/Home";
 import CategoriaPage from "./pages/home/CategoriaPage";
 import { useCategorias } from "./hooks/useCategorias";
 import MyProducts from "./pages/myProducts/MyProducts";
+import CadastrarProduto from "./pages/cadastrarProduto/CadastrarProduto";
 import DetalheProduto from "./pages/detalheProdutos/DetalheProduto";
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
             <Route path="/login" element={<TelaLogin />} />
             <Route path="/usuario/cadastro" element={<CadastroUsuario />} />
             <Route path="/meusProdutos" element={<MyProducts />} />
+            <Route path="/cadastrarProduto" element={<CadastrarProduto categorias={categorias} />} />
           </Routes>
         </main>
       </div>
