@@ -26,9 +26,14 @@ export default function Home() {
     ? `http://localhost:8080/produtos/buscar?${queryParams.toString()}`
     : "http://localhost:8080/produtos/home";
 
+  console.log("URL final:", urlFinal);
+
   fetch(urlFinal)
     .then((res) => res.json())
-    .then((data) => setProdutos(data))
+    .then((data) => {
+      console.log("Produtos recebidos:", data);
+      setProdutos(data);
+    })
     .catch((err) => console.error(err));
 }, [location.search]);
 

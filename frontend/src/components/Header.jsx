@@ -26,7 +26,10 @@ export default function Header({ categorias = [] }) {
       params.set("categoria", categoria);
     }
 
-    navigate(`/${params.toString() ? `?${params.toString()}` : ""}`);
+    navigate({
+  pathname: "/",
+  search: params.toString() ? `?${params.toString()}` : ""
+});
   }
 
   function handleSubmit(e) {
@@ -35,10 +38,21 @@ export default function Header({ categorias = [] }) {
   }
 
   function handleCategoriaChange(e) {
-    const novaCategoria = e.target.value;
-    setCategoriaSelecionada(novaCategoria);
-    aplicarFiltros(termoBusca, novaCategoria);
+  const novaCategoria = e.target.value;
+  setCategoriaSelecionada(novaCategoria);
+
+  if (!novaCategoria.trim()) {
+    aplicarFiltros(termoBusca, "");
+    return;
   }
+
+  if (!termoBusca.trim()) {
+    navigate(`/categoria/${encodeURIComponent(novaCategoria)}`);
+    return;
+  }
+
+  aplicarFiltros(termoBusca, novaCategoria);
+}
 
   function handleLogout() {
     localStorage.removeItem("token");

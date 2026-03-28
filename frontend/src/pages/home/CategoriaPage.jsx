@@ -24,7 +24,7 @@ export default function CategoriaPage() {
             <h5>{p.nome}</h5>
             <p>R$ {Number(p.preco).toFixed(2)}</p>
 
-            <Link to={`/produtos/${p.id}`} className="details-link">
+            <Link to={`/produtos/${p.id}`} className="details-button">
               Ver detalhes
             </Link>
           </div>
