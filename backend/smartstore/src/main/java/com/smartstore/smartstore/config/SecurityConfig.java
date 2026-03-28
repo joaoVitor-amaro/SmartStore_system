@@ -31,26 +31,14 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
-
-                        .requestMatchers(
-                                "/auth/login",
-                                "/cliente/cadastro"
-                        ).permitAll()
-
-                        // liberar imagens
+                        .requestMatchers("/auth/login", "/cliente/cadastro").permitAll()
                         .requestMatchers("/imagens/**").permitAll()
+                        .requestMatchers("/api/categorias/**", "/marcas/**").permitAll()
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
 
-                        .requestMatchers(
-                                "/api/categorias",
-                                "/marcas/**",
-                                "/produtos/home",
-                                "/cliente/cadastro",
-                                "/api/categorias/**",
-                                "/produtos/**",
-                                "/v3/api-docs/**",
-                                "/swagger-ui/**",
-                                "/swagger-ui.html"
-                        ).permitAll()
+                        // GET público, POST exige token
+                        .requestMatchers(HttpMethod.GET, "/produtos/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/produtos/cadastro").authenticated()
 
                         .anyRequest().authenticated()
                 )
