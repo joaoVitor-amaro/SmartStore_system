@@ -10,6 +10,8 @@ export default function MyProducts() {
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState({});
   const [produtos, setProdutos] = useState([]);
+  const [sucesso, setSucesso] = useState("");
+  const [confirmDeleteId, setConfirmDeleteId] = useState(null);
 
   const handleDelete = async (id) => {
   try {
@@ -27,6 +29,8 @@ export default function MyProducts() {
     }
 
     setProdutos((prev) => prev.filter((p) => p.id !== id));
+    setSucesso("Produto excluído com sucesso!");
+    setTimeout(() => setSucesso(""), 3000);
   } catch (error) {
     console.error(error);
   }
@@ -81,6 +85,8 @@ export default function MyProducts() {
     );
 
     setEditingId(null);
+    setSucesso("Produto atualizado com sucesso!");
+    setTimeout(() => setSucesso(""), 3000);
   } catch (error) {
     console.error(error);
   }
@@ -93,6 +99,16 @@ export default function MyProducts() {
 
   return (
     <div className="container my-4">
+      {sucesso && (
+        <div
+          className="position-fixed top-0 end-0 m-3 alert alert-success d-flex align-items-center gap-2 shadow"
+          style={{ zIndex: 9999, minWidth: 280 }}
+        >
+          <i className="bi bi-check-circle-fill" />
+          {sucesso}
+          <button className="btn-close ms-auto" onClick={() => setSucesso("")} />
+        </div>
+      )}
       <Breadcrumb
         items={[
           { label: "Home", path: "/" },
