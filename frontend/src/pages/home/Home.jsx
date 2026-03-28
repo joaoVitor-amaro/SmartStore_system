@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import Breadcrumb from "../../components/Breadcrumb/Breadcrumb";
 import "./Home.css";
 
 export default function Home() {
@@ -14,13 +15,17 @@ export default function Home() {
 
   return (
     <div className="home-container">
+      <Breadcrumb
+        items={[
+          { label: "Home", path: "/" }
+        ]}
+      />
+
       <h2>Produtos</h2>
 
       <div className="product-grid">
         {produtos.map((p) => (
           <div className="product-card" key={p.id}>
-            
-            {/* CARD CLICÁVEL */}
             <Link to={`/produtos/${p.id}`} className="card-link">
               <img src={p.imagemUrl} alt={p.nome} />
 
@@ -37,11 +42,9 @@ export default function Home() {
               </div>
             </Link>
 
-            {/* BOTÃO */}
             <Link to={`/produtos/${p.id}`} className="details-button">
               Ver detalhes
             </Link>
-
           </div>
         ))}
       </div>
