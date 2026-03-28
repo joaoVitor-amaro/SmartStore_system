@@ -10,6 +10,7 @@ import { useCategorias } from "./hooks/useCategorias";
 import MyProducts from "./pages/myProducts/MyProducts";
 import CadastrarProduto from "./pages/cadastrarProduto/CadastrarProduto";
 import DetalheProduto from "./pages/detalheProdutos/DetalheProduto";
+import Carrinho from "./pages/carrinho/Carrinho";
 
 function App() {
   const { categorias } = useCategorias();
@@ -28,6 +29,7 @@ function App() {
             <Route path="/usuario/cadastro" element={<CadastroUsuario />} />
             <Route path="/meusProdutos" element={<MyProducts />} />
             <Route path="/cadastrarProduto" element={<CadastrarProduto categorias={categorias} />} />
+            <Route path="/carrinho" element={<Carrinho />} />
           </Routes>
         </main>
       </div>
