@@ -1,41 +1,98 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import Breadcrumb from "../../components/Breadcrumb/Breadcrumb";  
-import 'bootstrap/dist/css/bootstrap.min.css';
-
-const initialProducts = [
-  { id: 1, name: "Smartphone Galaxy A33", price: 1999, category: "Eletrônicos", stock: 2 },
-  { id: 2, name: "Notebook Pro X", price: 5499, category: "Eletrônicos", stock: 15 },
-];
+import Breadcrumb from "../../components/Breadcrumb/Breadcrumb";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 const formatCurrency = (value) =>
   new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value);
 
 export default function MyProducts() {
-  const [products, setProducts] = useState(initialProducts);
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState({});
+  const [produtos, setProdutos] = useState([]);
 
-  const handleDelete = (id) => setProducts(prev => prev.filter(p => p.id !== id));
+  const handleDelete = async (id) => {
+  try {
+    const token = localStorage.getItem("token");
+
+    const res = await fetch(`http://localhost:8080/produtos/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    if (!res.ok) {
+      throw new Error("Erro ao excluir produto");
+    }
+
+    setProdutos((prev) => prev.filter((p) => p.id !== id));
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    fetch("http://localhost:8080/produtos/meus", {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("Erro ao buscar meus produtos");
+        }
+        return res.json();
+      })
+      .then((data) => setProdutos(data))
+      .catch((err) => console.error(err));
+  }, []);
 
   const handleEdit = (product) => {
     setEditingId(product.id);
     setEditForm({ ...product });
   };
 
-  const handleSave = () => {
-    setProducts(prev => prev.map(p => (p.id === editingId ? { ...editForm, id: p.id } : p)));
+  const handleSave = async () => {
+  try {
+    const token = localStorage.getItem("token");
+
+    const res = await fetch(`http://localhost:8080/produtos/${editingId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        nome: editForm.nome,
+        preco: Number(editForm.preco),
+        estoque: Number(editForm.estoque)
+      })
+    });
+
+    if (!res.ok) {
+      throw new Error("Erro ao atualizar produto");
+    }
+
+    setProdutos((prev) =>
+      prev.map((p) => (p.id === editingId ? { ...p, ...editForm, id: p.id } : p))
+    );
+
     setEditingId(null);
-  };
+  } catch (error) {
+    console.error(error);
+  }
+};
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setEditForm(prev => ({ ...prev, [name]: value }));
+    setEditForm((prev) => ({ ...prev, [name]: value }));
   };
 
   return (
     <div className="container my-4">
-
       <Breadcrumb
         items={[
           { label: "Home", path: "/" },
@@ -47,7 +104,7 @@ export default function MyProducts() {
         <h2>Produtos Cadastrados</h2>
         <div className="d-flex gap-2 flex-wrap">
           <Link to="/cadastrarProduto">
-              <button className="btn btn-primary">+ Cadastrar Produto</button>
+            <button className="btn btn-primary">+ Cadastrar Produto</button>
           </Link>
           <button className="btn btn-secondary">Gerar Relatório (PDF)</button>
         </div>
@@ -68,79 +125,147 @@ export default function MyProducts() {
             </thead>
 
             <tbody>
-              {products.map(product => (
+              {produtos.map((product) => (
                 <tr key={product.id}>
                   {editingId === product.id ? (
                     <>
                       <td>??</td>
-                      <td><input className="form-control" name="name" value={editForm.name} onChange={handleChange} /></td>
-                      <td><input className="form-control" type="number" name="price" value={editForm.price} onChange={handleChange} /></td>
-                      <td><input className="form-control" name="category" value={editForm.category} onChange={handleChange} /></td>
-                      <td><input className="form-control" type="number" name="stock" value={editForm.stock} onChange={handleChange} /></td>
                       <td>
-                        <button className="btn btn-success btn-sm me-1" onClick={handleSave}>Salvar</button>
-                        <button className="btn btn-danger btn-sm" onClick={() => setEditingId(null)}>Cancelar</button>
+                        <input
+                          className="form-control"
+                          name="nome"
+                          value={editForm.nome}
+                          onChange={handleChange}
+                        />
+                      </td>
+                      <td>
+                        <input
+                          className="form-control"
+                          type="number"
+                          name="preco"
+                          value={editForm.preco}
+                          onChange={handleChange}
+                        />
+                      </td>
+                      <td>
+                        <input
+                          className="form-control"
+                          name="categoria"
+                          value={editForm.categoria}
+                          onChange={handleChange}
+                        />
+                      </td>
+                      <td>
+                        <input
+                          className="form-control"
+                          type="number"
+                          name="estoque"
+                          value={editForm.estoque}
+                          onChange={handleChange}
+                        />
+                      </td>
+                      <td>
+                        <button className="btn btn-success btn-sm me-1" onClick={handleSave}>
+                          Salvar
+                        </button>
+                        <button className="btn btn-danger btn-sm" onClick={() => setEditingId(null)}>
+                          Cancelar
+                        </button>
                       </td>
                     </>
                   ) : (
                     <>
                       <td>??</td>
-                      <td>{product.name}</td>
-                      <td>{formatCurrency(product.price)}</td>
-                      <td>{product.category}</td>
-                      <td>{product.stock}</td>
+                      <td>{product.nome}</td>
+                      <td>{formatCurrency(product.preco)}</td>
+                      <td>{product.categoria}</td>
+                      <td>{product.estoque}</td>
                       <td>
-                        <button className="btn btn-warning btn-sm me-1" onClick={() => handleEdit(product)}>Atualizar</button>
-                        <button className="btn btn-danger btn-sm" onClick={() => handleDelete(product.id)}>??</button>
+                        <button className="btn btn-warning btn-sm me-1" onClick={() => handleEdit(product)}>
+                          Atualizar
+                        </button>
+                        <button className="btn btn-danger btn-sm" onClick={() => handleDelete(product.id)}>
+                          Excluir
+                        </button>
                       </td>
                     </>
                   )}
                 </tr>
               ))}
             </tbody>
-
           </table>
         </div>
       </div>
 
       <div className="d-md-none">
         <div className="d-flex flex-column gap-3">
-          {products.map(product => (
+          {produtos.map((product) => (
             <div key={product.id} className="card shadow-sm">
               <div className="card-body">
-
                 {editingId === product.id ? (
                   <>
-                    <input className="form-control mb-2" name="name" value={editForm.name} onChange={handleChange} placeholder="Nome" />
-                    <input className="form-control mb-2" type="number" name="price" value={editForm.price} onChange={handleChange} placeholder="Pre�o" />
-                    <input className="form-control mb-2" name="category" value={editForm.category} onChange={handleChange} placeholder="Categoria" />
-                    <input className="form-control mb-2" type="number" name="stock" value={editForm.stock} onChange={handleChange} placeholder="Estoque" />
+                    <input
+                      className="form-control mb-2"
+                      name="nome"
+                      value={editForm.nome}
+                      onChange={handleChange}
+                      placeholder="Nome"
+                    />
+                    <input
+                      className="form-control mb-2"
+                      type="number"
+                      name="preco"
+                      value={editForm.preco}
+                      onChange={handleChange}
+                      placeholder="Preço"
+                    />
+                    <input
+                      className="form-control mb-2"
+                      name="categoria"
+                      value={editForm.categoria}
+                      onChange={handleChange}
+                      placeholder="Categoria"
+                    />
+                    <input
+                      className="form-control mb-2"
+                      type="number"
+                      name="estoque"
+                      value={editForm.estoque}
+                      onChange={handleChange}
+                      placeholder="Estoque"
+                    />
 
                     <div className="d-flex gap-2">
-                      <button className="btn btn-success btn-sm" onClick={handleSave}>Salvar</button>
-                      <button className="btn btn-danger btn-sm" onClick={() => setEditingId(null)}>Cancelar</button>
+                      <button className="btn btn-success btn-sm" onClick={handleSave}>
+                        Salvar
+                      </button>
+                      <button className="btn btn-danger btn-sm" onClick={() => setEditingId(null)}>
+                        Cancelar
+                      </button>
                     </div>
                   </>
                 ) : (
                   <>
-                    <h5 className="card-title">{product.name}</h5>
-                    <p className="card-text mb-1">?? {formatCurrency(product.price)}</p>
-                    <p className="card-text mb-1">?? {product.category}</p>
-                    <p className="card-text mb-2">?? {product.stock}</p>
+                    <h5 className="card-title">{product.nome}</h5>
+                    <p className="card-text mb-1">{formatCurrency(product.preco)}</p>
+                    <p className="card-text mb-1">{product.categoria}</p>
+                    <p className="card-text mb-2">Estoque: {product.estoque}</p>
 
                     <div className="d-flex gap-2 flex-wrap">
-                      <button className="btn btn-warning btn-sm" onClick={() => handleEdit(product)}>Atualizar</button>
-                      <button className="btn btn-danger btn-sm" onClick={() => handleDelete(product.id)}>??</button>
+                      <button className="btn btn-warning btn-sm" onClick={() => handleEdit(product)}>
+                        Atualizar
+                      </button>
+                      <button className="btn btn-danger btn-sm" onClick={() => handleDelete(product.id)}>
+                        Excluir
+                      </button>
                     </div>
                   </>
                 )}
-
               </div>
             </div>
           ))}
         </div>
       </div>
-
     </div>
   );
 }
