@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Breadcrumb from "../../components/Breadcrumb/Breadcrumb";
 import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap-icons/font/bootstrap-icons.css";
 
 const formatCurrency = (value) =>
   new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value);
@@ -11,30 +12,8 @@ export default function MyProducts() {
   const [editForm, setEditForm] = useState({});
   const [produtos, setProdutos] = useState([]);
   const [sucesso, setSucesso] = useState("");
-  const [confirmDeleteId, setConfirmDeleteId] = useState(null);
-
-  const handleDelete = async (id) => {
-  try {
-    const token = localStorage.getItem("token");
-
-    const res = await fetch(`http://localhost:8080/produtos/${id}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
-
-    if (!res.ok) {
-      throw new Error("Erro ao excluir produto");
-    }
-
-    setProdutos((prev) => prev.filter((p) => p.id !== id));
-    setSucesso("Produto excluído com sucesso!");
-    setTimeout(() => setSucesso(""), 3000);
-  } catch (error) {
-    console.error(error);
-  }
-};
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [produtoParaExcluir, setProdutoParaExcluir] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -60,37 +39,73 @@ export default function MyProducts() {
   };
 
   const handleSave = async () => {
-  try {
-    const token = localStorage.getItem("token");
+    try {
+      const token = localStorage.getItem("token");
 
-    const res = await fetch(`http://localhost:8080/produtos/${editingId}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify({
-        nome: editForm.nome,
-        preco: Number(editForm.preco),
-        estoque: Number(editForm.estoque)
-      })
-    });
+      const res = await fetch(`http://localhost:8080/produtos/${editingId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          nome: editForm.nome,
+          preco: Number(editForm.preco),
+          estoque: Number(editForm.estoque)
+        })
+      });
 
-    if (!res.ok) {
-      throw new Error("Erro ao atualizar produto");
+      if (!res.ok) {
+        throw new Error("Erro ao atualizar produto");
+      }
+
+      setProdutos((prev) =>
+        prev.map((p) => (p.id === editingId ? { ...p, ...editForm, id: p.id } : p))
+      );
+
+      setEditingId(null);
+      setSucesso("Produto atualizado com sucesso!");
+      setTimeout(() => setSucesso(""), 3000);
+    } catch (error) {
+      console.error(error);
     }
+  };
 
-    setProdutos((prev) =>
-      prev.map((p) => (p.id === editingId ? { ...p, ...editForm, id: p.id } : p))
-    );
+  const abrirModalExcluir = (product) => {
+    setProdutoParaExcluir(product);
+    setShowDeleteModal(true);
+  };
 
-    setEditingId(null);
-    setSucesso("Produto atualizado com sucesso!");
-    setTimeout(() => setSucesso(""), 3000);
-  } catch (error) {
-    console.error(error);
-  }
-};
+  const fecharModalExcluir = () => {
+    setProdutoParaExcluir(null);
+    setShowDeleteModal(false);
+  };
+
+  const confirmarExclusao = async () => {
+    if (!produtoParaExcluir) return;
+
+    try {
+      const token = localStorage.getItem("token");
+
+      const res = await fetch(`http://localhost:8080/produtos/${produtoParaExcluir.id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (!res.ok) {
+        throw new Error("Erro ao excluir produto");
+      }
+
+      setProdutos((prev) => prev.filter((p) => p.id !== produtoParaExcluir.id));
+      fecharModalExcluir();
+      setSucesso("Produto excluído com sucesso!");
+      setTimeout(() => setSucesso(""), 3000);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -109,6 +124,7 @@ export default function MyProducts() {
           <button className="btn-close ms-auto" onClick={() => setSucesso("")} />
         </div>
       )}
+
       <Breadcrumb
         items={[
           { label: "Home", path: "/" },
@@ -163,14 +179,7 @@ export default function MyProducts() {
                           onChange={handleChange}
                         />
                       </td>
-                      <td>
-                        <input
-                          className="form-control"
-                          name="categoria"
-                          value={editForm.categoria}
-                          onChange={handleChange}
-                        />
-                      </td>
+                      <td>{product.categoria}</td>
                       <td>
                         <input
                           className="form-control"
@@ -200,7 +209,10 @@ export default function MyProducts() {
                         <button className="btn btn-warning btn-sm me-1" onClick={() => handleEdit(product)}>
                           Atualizar
                         </button>
-                        <button className="btn btn-danger btn-sm" onClick={() => handleDelete(product.id)}>
+                        <button
+                          className="btn btn-danger btn-sm"
+                          onClick={() => abrirModalExcluir(product)}
+                        >
                           Excluir
                         </button>
                       </td>
@@ -235,13 +247,7 @@ export default function MyProducts() {
                       onChange={handleChange}
                       placeholder="Preço"
                     />
-                    <input
-                      className="form-control mb-2"
-                      name="categoria"
-                      value={editForm.categoria}
-                      onChange={handleChange}
-                      placeholder="Categoria"
-                    />
+                    <p className="card-text mb-1">{product.categoria}</p>
                     <input
                       className="form-control mb-2"
                       type="number"
@@ -271,7 +277,10 @@ export default function MyProducts() {
                       <button className="btn btn-warning btn-sm" onClick={() => handleEdit(product)}>
                         Atualizar
                       </button>
-                      <button className="btn btn-danger btn-sm" onClick={() => handleDelete(product.id)}>
+                      <button
+                        className="btn btn-danger btn-sm"
+                        onClick={() => abrirModalExcluir(product)}
+                      >
                         Excluir
                       </button>
                     </div>
@@ -282,6 +291,65 @@ export default function MyProducts() {
           ))}
         </div>
       </div>
+
+      {showDeleteModal && (
+        <div
+          className="modal d-block"
+          tabIndex="-1"
+          style={{ backgroundColor: "rgba(0,0,0,0.45)" }}
+        >
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content border-0 shadow-lg rounded-4">
+              <div className="modal-header border-0 pb-0">
+                <h5 className="modal-title fw-bold text-danger">
+                  Confirmar exclusão
+                </h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={fecharModalExcluir}
+                ></button>
+              </div>
+
+              <div className="modal-body pt-2">
+                <p className="mb-2">
+                  Tem certeza que deseja excluir este produto?
+                </p>
+
+                {produtoParaExcluir && (
+                  <div className="bg-light rounded-3 p-3 border">
+                    <div className="fw-semibold">{produtoParaExcluir.nome}</div>
+                    <div className="text-muted small">
+                      {formatCurrency(produtoParaExcluir.preco)} • {produtoParaExcluir.categoria}
+                    </div>
+                  </div>
+                )}
+
+                <p className="text-muted small mt-3 mb-0">
+                  Essa ação não poderá ser desfeita.
+                </p>
+              </div>
+
+              <div className="modal-footer border-0 pt-0">
+                <button
+                  type="button"
+                  className="btn btn-light"
+                  onClick={fecharModalExcluir}
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-danger"
+                  onClick={confirmarExclusao}
+                >
+                  Excluir produto
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
