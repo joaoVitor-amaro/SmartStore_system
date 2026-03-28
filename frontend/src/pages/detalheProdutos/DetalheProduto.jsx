@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
+import Breadcrumb from "../../components/Breadcrumb/Breadcrumb";
 import "./DetalheProduto.css";
 
 export default function DetalheProduto() {
@@ -142,13 +143,19 @@ export default function DetalheProduto() {
 
   return (
     <div className="produto-page">
-      <div className="breadcrumb">
-        <Link to="/">Home</Link>
-        <span>›</span>
-        <span>{produto.categoriaNome}</span>
-        <span>›</span>
-        <span>{produto.nome}</span>
-      </div>
+      <Breadcrumb
+        items={[
+            { label: "Home", path: "/" },
+            {
+            label: produto.categoriaNome,
+            path: `/categoria/${produto.categoriaNome}`
+            },
+            {
+            label: produto.nome,
+            path: ""
+            }
+        ]}
+        />
 
       <div className="produto-detalhe-container">
         <div className="produto-galeria-card">
@@ -251,80 +258,22 @@ export default function DetalheProduto() {
           </div>
 
           <div className="barras-avaliacao">
-            <div className="barra-linha">
-              <span>5 estrelas</span>
-              <div className="barra">
-                <div
-                  className="preenchimento"
-                  style={{
-                    width: larguraBarra(
-                      avaliacoes?.distribuicao?.[0] || 0,
-                      avaliacoes?.totalAvaliacoes || 0
-                    )
-                  }}
-                ></div>
+            {[5,4,3,2,1].map((estrela, i) => (
+              <div className="barra-linha" key={estrela}>
+                <span>{estrela} estrelas</span>
+                <div className="barra">
+                  <div
+                    className="preenchimento"
+                    style={{
+                      width: larguraBarra(
+                        avaliacoes?.distribuicao?.[i] || 0,
+                        avaliacoes?.totalAvaliacoes || 0
+                      )
+                    }}
+                  ></div>
+                </div>
               </div>
-            </div>
-
-            <div className="barra-linha">
-              <span>4 estrelas</span>
-              <div className="barra">
-                <div
-                  className="preenchimento"
-                  style={{
-                    width: larguraBarra(
-                      avaliacoes?.distribuicao?.[1] || 0,
-                      avaliacoes?.totalAvaliacoes || 0
-                    )
-                  }}
-                ></div>
-              </div>
-            </div>
-
-            <div className="barra-linha">
-              <span>3 estrelas</span>
-              <div className="barra">
-                <div
-                  className="preenchimento"
-                  style={{
-                    width: larguraBarra(
-                      avaliacoes?.distribuicao?.[2] || 0,
-                      avaliacoes?.totalAvaliacoes || 0
-                    )
-                  }}
-                ></div>
-              </div>
-            </div>
-
-            <div className="barra-linha">
-              <span>2 estrelas</span>
-              <div className="barra">
-                <div
-                  className="preenchimento"
-                  style={{
-                    width: larguraBarra(
-                      avaliacoes?.distribuicao?.[3] || 0,
-                      avaliacoes?.totalAvaliacoes || 0
-                    )
-                  }}
-                ></div>
-              </div>
-            </div>
-
-            <div className="barra-linha">
-              <span>1 estrela</span>
-              <div className="barra">
-                <div
-                  className="preenchimento"
-                  style={{
-                    width: larguraBarra(
-                      avaliacoes?.distribuicao?.[4] || 0,
-                      avaliacoes?.totalAvaliacoes || 0
-                    )
-                  }}
-                ></div>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
 
@@ -337,11 +286,9 @@ export default function DetalheProduto() {
             value={novaNota}
             onChange={(e) => setNovaNota(Number(e.target.value))}
           >
-            <option value={5}>5 estrelas</option>
-            <option value={4}>4 estrelas</option>
-            <option value={3}>3 estrelas</option>
-            <option value={2}>2 estrelas</option>
-            <option value={1}>1 estrela</option>
+            {[5,4,3,2,1].map(n => (
+              <option key={n} value={n}>{n} estrelas</option>
+            ))}
           </select>
 
           <label htmlFor="comentario">Comentário</label>

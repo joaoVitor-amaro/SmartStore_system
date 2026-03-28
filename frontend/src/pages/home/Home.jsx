@@ -1,26 +1,55 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import Breadcrumb from "../../components/Breadcrumb/Breadcrumb.jsx";
 import "./Home.css";
 
 export default function Home() {
   const [produtos, setProdutos] = useState([]);
+  const location = useLocation();
 
   useEffect(() => {
-    fetch("http://localhost:8080/produtos/home")
-      .then((res) => res.json())
-      .then((data) => setProdutos(data))
-      .catch((err) => console.error(err));
-  }, []);
+  const params = new URLSearchParams(location.search);
+  const nome = params.get("nome") || "";
+  const categoria = params.get("categoria") || "";
+
+  const queryParams = new URLSearchParams();
+
+  if (nome.trim()) {
+    queryParams.append("nome", nome);
+  }
+
+  if (categoria.trim()) {
+    queryParams.append("categoria", categoria);
+  }
+
+  const urlFinal = queryParams.toString()
+    ? `http://localhost:8080/produtos/buscar?${queryParams.toString()}`
+    : "http://localhost:8080/produtos/home";
+
+  console.log("URL final:", urlFinal);
+
+  fetch(urlFinal)
+    .then((res) => res.json())
+    .then((data) => {
+      console.log("Produtos recebidos:", data);
+      setProdutos(data);
+    })
+    .catch((err) => console.error(err));
+}, [location.search]);
 
   return (
     <div className="home-container">
+      <Breadcrumb
+        items={[
+          { label: "Home", path: "/" }
+        ]}
+      />
+
       <h2>Produtos</h2>
 
       <div className="product-grid">
         {produtos.map((p) => (
           <div className="product-card" key={p.id}>
-            
-            {/* CARD CLICÁVEL */}
             <Link to={`/produtos/${p.id}`} className="card-link">
               <img src={p.imagemUrl} alt={p.nome} />
 
@@ -37,11 +66,9 @@ export default function Home() {
               </div>
             </Link>
 
-            {/* BOTÃO */}
             <Link to={`/produtos/${p.id}`} className="details-button">
               Ver detalhes
             </Link>
-
           </div>
         ))}
       </div>

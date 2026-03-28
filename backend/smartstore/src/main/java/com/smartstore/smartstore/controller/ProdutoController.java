@@ -23,6 +23,19 @@ public class ProdutoController {
         return produtoService.listarProdutosHome();
     }
 
+    @GetMapping("/categoria/{nome}")
+    public List<ProdutoHomeResponseDto> listarPorCategoria(@PathVariable String nome) {
+        return produtoService.listarProdutosPorCategoria(nome);
+    }
+
+    @GetMapping("/buscar")
+    public List<ProdutoHomeResponseDto> buscarProdutos(
+            @RequestParam(required = false) String nome,
+            @RequestParam(required = false) String categoria
+    ) {
+        return produtoService.buscarProdutos(nome, categoria);
+    }
+
     @GetMapping("/{id}")
     public ProdutoDetalheResponseDto buscarProdutoPorId(@PathVariable Long id) {
         return produtoService.buscarDetalhePorId(id);
