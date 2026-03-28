@@ -2,6 +2,7 @@ package com.smartstore.smartstore.controller;
 
 import com.smartstore.smartstore.dto.ProdutoCreateRequestDto;
 import com.smartstore.smartstore.dto.ProdutoCreateResponseDto;
+import com.smartstore.smartstore.dto.ProdutoDetalheResponseDto;
 import com.smartstore.smartstore.dto.ProdutoHomeResponseDto;
 import com.smartstore.smartstore.response.ApiResponse;
 import com.smartstore.smartstore.service.ProdutoService;
@@ -14,7 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/produtos")
-@CrossOrigin // importante pro React
+@CrossOrigin
 public class ProdutoController {
 
     private final ProdutoService produtoService;
@@ -40,5 +41,21 @@ public class ProdutoController {
                 null
         );
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    @GetMapping("/categoria/{nome}")
+    public List<ProdutoHomeResponseDto> listarPorCategoria(@PathVariable String nome) {
+        return produtoService.listarProdutosPorCategoria(nome);
+    }
+
+    @GetMapping("/buscar")
+    public List<ProdutoHomeResponseDto> buscarProdutos(
+            @RequestParam(required = false) String nome,
+            @RequestParam(required = false) String categoria
+    ) {
+        return produtoService.buscarProdutos(nome, categoria);
+    }
+
+    @GetMapping("/{id}")
+    public ProdutoDetalheResponseDto buscarProdutoPorId(@PathVariable Long id) {
+        return produtoService.buscarDetalhePorId(id);
     }
 }

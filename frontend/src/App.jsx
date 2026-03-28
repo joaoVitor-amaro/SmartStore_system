@@ -5,12 +5,15 @@ import CadastroUsuario from "./pages/CadastroUsuario";
 import Header from "./components/Header";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Home from "./pages/home/Home";
+import CategoriaPage from "./pages/home/CategoriaPage";
 import { useCategorias } from "./hooks/useCategorias";
 import MyProducts from "./pages/myProducts/MyProducts";
 import CadastrarProduto from "./pages/cadastrarProduto/CadastrarProduto";
+import DetalheProduto from "./pages/detalheProdutos/DetalheProduto";
 
 function App() {
-  const {categorias} = useCategorias()
+  const { categorias } = useCategorias();
+
   return (
     <BrowserRouter>
       <div className="app-layout">
@@ -19,7 +22,8 @@ function App() {
         <main className="app-content">
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/" element={<div>Home</div>} />
+            <Route path="/produtos/:id" element={<DetalheProduto />} />
+            <Route path="/categoria/:nomeCategoria" element={<CategoriaPage />} />
             <Route path="/login" element={<TelaLogin />} />
             <Route path="/usuario/cadastro" element={<CadastroUsuario />} />
             <Route path="/meusProdutos" element={<MyProducts />} />
