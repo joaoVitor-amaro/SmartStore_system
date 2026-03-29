@@ -48,9 +48,17 @@ public class ProdutoController {
     @GetMapping("/buscar")
     public List<ProdutoHomeResponseDto> buscarProdutos(
             @RequestParam(required = false) String nome,
-            @RequestParam(required = false) String categoria
+            @RequestParam(required = false) String categoria,
+            @RequestParam(required = false) String marca,
+            @RequestParam(required = false) Double precoMin,
+            @RequestParam(required = false) Double precoMax,
+            @RequestParam(required = false) Boolean disponivel,
+            @RequestParam(required = false) Boolean estoqueBaixo,
+            @RequestParam(required = false) String ordenar
     ) {
-        return produtoService.buscarProdutos(nome, categoria);
+        return produtoService.buscarProdutos(
+                nome, categoria, marca, precoMin, precoMax, disponivel, estoqueBaixo, ordenar
+        );
     }
 
     @GetMapping("/{id}")
