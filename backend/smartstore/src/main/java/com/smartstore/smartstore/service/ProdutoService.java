@@ -157,7 +157,7 @@ public class ProdutoService {
         produtoRepository.save(produto);
     }
 
-    public public List<MeusProdutosResponseDto> listarProdutosDoVendedor(String email) {
+    public List<MeusProdutosResponseDto> listarProdutosDoVendedor(String email) {
         return produtoRepository.findByVendedorEmail(email)
                 .stream()
                 .map(produto -> new MeusProdutosResponseDto(
