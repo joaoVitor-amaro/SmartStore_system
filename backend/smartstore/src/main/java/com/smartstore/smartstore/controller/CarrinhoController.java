@@ -32,4 +32,34 @@ public class CarrinhoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
 
     }
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<CarrinhoResponseDto>> buscarCarrinho(
+            Authentication authentication) {
+        CarrinhoResponseDto carrinho = carrinhoService.buscarCarrinho(authentication.getName());
+        ApiResponse<CarrinhoResponseDto> response = new ApiResponse<>(
+                true,
+                "Carrinho encontrado",
+                carrinho,
+                null
+        );
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/item/{idProduto}")
+    public ResponseEntity<ApiResponse<Void>> atualizarQuantidade(
+            @PathVariable Long idProduto,
+            @RequestParam Integer quantidade,
+            Authentication authentication) {
+        carrinhoService.atualizarQuantidade(authentication.getName(), idProduto, quantidade);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Quantidade atualizada", null, null));
+    }
+
+    @DeleteMapping("/item/{idProduto}")
+    public ResponseEntity<ApiResponse<Void>> deletarItem(
+            @PathVariable Long idProduto,
+            Authentication authentication) {
+        carrinhoService.deletarCarrinho(authentication.getName(), idProduto);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Item removido do carrinho", null, null));
+    }
 }
