@@ -1,35 +1,80 @@
-import { useState } from "react";
-
-const initialItems = [
-  { id: 1, nome: "Smartphone Galaxy S22", preco: 4299.0, quantidade: 1, emoji: "📱" },
-  { id: 2, nome: 'Smart TV 50" 4K', preco: 2899.9, quantidade: 1, emoji: "📺" },
-  { id: 3, nome: "Fone de Ouvido Bluetooth", preco: 499.99, quantidade: 1, emoji: "🎧" },
-];
-
-const FRETE = 45.0;
-const DESCONTO = 150.0;
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const fmt = (v) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
 export default function Carrinho() {
-  const [itens, setItens] = useState(initialItems);
+  const [itens, setItens] = useState([]);
+  const [carregando, setCarregando] = useState(true);
+  const navigate = useNavigate();
 
-  const alterar = (id, delta) => {
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+
+    fetch("http://localhost:8080/carrinho", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setItens(data.data?.itens || []);
+        setCarregando(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        setCarregando(false);
+      });
+  }, []);
+
+  const alterar = (idProduto, delta) => {
+    const token = localStorage.getItem("token");
+    const item = itens.find((i) => i.idProduto === idProduto);
+    const novaQuantidade = item.quantidade + delta;
+
+    if (novaQuantidade > item.estoque) return;
+    if (novaQuantidade < 0) return;
+
+    // Atualiza visualmente
     setItens((prev) =>
       prev
-        .map((item) => item.id === id ? { ...item, quantidade: item.quantidade + delta } : item)
-        .filter((item) => item.quantidade > 0)
+        .map((i) => i.idProduto === idProduto ? { ...i, quantidade: novaQuantidade } : i)
+        .filter((i) => i.quantidade > 0)
     );
+
+    fetch(`http://localhost:8080/carrinho/item/${idProduto}?quantidade=${novaQuantidade}`, {
+      method: "PUT",
+      headers: { Authorization: `Bearer ${token}` },
+    }).catch((err) => console.error("Erro ao atualizar quantidade:", err));
   };
 
-  const remover = (id) => setItens((prev) => prev.filter((i) => i.id !== id));
+  const remover = (idProduto) => {
+    const token = localStorage.getItem("token");
+
+    // Remove visualmente
+    setItens((prev) => prev.filter((i) => i.idProduto !== idProduto));
+
+    // Remove no backend
+    fetch(`http://localhost:8080/carrinho/item/${idProduto}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    }).catch((err) => console.error("Erro ao remover item:", err));
+  };
 
   const subtotal = itens.reduce((acc, i) => acc + i.preco * i.quantidade, 0);
-  const total = subtotal + FRETE - DESCONTO;
+
+  if (carregando)
+    return <p className="text-center mt-5">Carregando carrinho...</p>;
 
   return (
     <>
-      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+      <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      />
 
       <div className="bg-light min-vh-100 py-4">
         <div className="container">
@@ -43,7 +88,6 @@ export default function Carrinho() {
           <div className="row g-4">
             {/* ===== COLUNA ITENS ===== */}
             <div className="col-12 col-lg-8">
-
               {itens.length === 0 ? (
                 <div className="card border-0 shadow-sm rounded-3">
                   <div className="card-body text-center text-muted py-5">
@@ -67,18 +111,23 @@ export default function Carrinho() {
                         </thead>
                         <tbody>
                           {itens.map((item) => (
-                            <tr key={item.id}>
+                            <tr key={item.idProduto}>
                               <td className="ps-4">
                                 <div className="d-flex align-items-center gap-3">
-                                  <div
-                                    className="rounded-3 d-flex align-items-center justify-content-center bg-dark text-white flex-shrink-0"
-                                    style={{ width: 52, height: 52, fontSize: 24 }}
-                                  >
-                                    {item.emoji}
-                                  </div>
+                                  <img
+                                    src={item.imagemUrl}
+                                    alt={item.nomeProduto}
+                                    className="rounded-3 flex-shrink-0"
+                                    style={{ width: 52, height: 52, objectFit: "cover" }}
+                                  />
                                   <div>
-                                    <div className="fw-semibold small">{item.nome}</div>
-                                    <div className="text-muted" style={{ fontSize: "0.78rem" }}>
+                                    <div className="fw-semibold small">
+                                      {item.nomeProduto}
+                                    </div>
+                                    <div
+                                      className="text-muted"
+                                      style={{ fontSize: "0.78rem" }}
+                                    >
                                       {fmt(item.preco)}
                                     </div>
                                   </div>
@@ -92,16 +141,24 @@ export default function Carrinho() {
                                   <button
                                     className="btn btn-outline-secondary btn-sm rounded-circle"
                                     style={{ width: 28, height: 28, padding: 0, lineHeight: 1 }}
-                                    onClick={() => alterar(item.id, -1)}
-                                  >−</button>
-                                  <span className="fw-semibold" style={{ minWidth: 20, textAlign: "center" }}>
+                                    onClick={() => alterar(item.idProduto, -1)}
+                                  >
+                                    −
+                                  </button>
+                                  <span
+                                    className="fw-semibold"
+                                    style={{ minWidth: 20, textAlign: "center" }}
+                                  >
                                     {item.quantidade}
                                   </span>
                                   <button
                                     className="btn btn-outline-secondary btn-sm rounded-circle"
                                     style={{ width: 28, height: 28, padding: 0, lineHeight: 1 }}
-                                    onClick={() => alterar(item.id, +1)}
-                                  >+</button>
+                                    onClick={() => alterar(item.idProduto, +1)}
+                                    disabled={item.quantidade >= item.estoque} // <- trava no limite
+                                  >
+                                    +
+                                  </button>
                                 </div>
                               </td>
 
@@ -111,8 +168,8 @@ export default function Carrinho() {
 
                               <td>
                                 <button
-                                  className="btn btn-link btn-sm text-primary p-0 text-decoration-none"
-                                  onClick={() => remover(item.id)}
+                                  className="btn btn-link btn-sm text-danger p-0 text-decoration-none"
+                                  onClick={() => remover(item.idProduto)}
                                 >
                                   Remover
                                 </button>
@@ -127,42 +184,45 @@ export default function Carrinho() {
                   {/* CARDS — visível apenas em telas pequenas (mobile) */}
                   <div className="d-md-none d-flex flex-column gap-3">
                     {itens.map((item) => (
-                      <div key={item.id} className="card border-0 shadow-sm rounded-3">
+                      <div
+                        key={item.idProduto}
+                        className="card border-0 shadow-sm rounded-3"
+                      >
                         <div className="card-body">
-                          {/* Linha superior: emoji + nome + remover */}
                           <div className="d-flex align-items-start gap-3 mb-3">
                             <div
-                              className="rounded-3 d-flex align-items-center justify-content-center bg-dark text-white flex-shrink-0"
-                              style={{ width: 52, height: 52, fontSize: 24 }}
-                            >
-                              {item.emoji}
-                            </div>
+                              className="rounded-3 bg-secondary flex-shrink-0"
+                              style={{ width: 52, height: 52 }}
+                            />
                             <div className="flex-grow-1">
-                              <div className="fw-semibold">{item.nome}</div>
+                              <div className="fw-semibold">{item.nomeProduto}</div>
                               <div className="text-muted small">{fmt(item.preco)}</div>
                             </div>
                             <button
                               className="btn btn-link btn-sm text-danger p-0 text-decoration-none"
-                              onClick={() => remover(item.id)}
+                              onClick={() => remover(item.idProduto)}
                             >
                               Remover
                             </button>
                           </div>
 
-                          {/* Linha inferior: quantidade + subtotal */}
                           <div className="d-flex align-items-center justify-content-between">
                             <div className="d-flex align-items-center gap-2">
                               <button
                                 className="btn btn-outline-secondary btn-sm rounded-circle"
                                 style={{ width: 32, height: 32, padding: 0, lineHeight: 1 }}
-                                onClick={() => alterar(item.id, -1)}
-                              >−</button>
+                                onClick={() => alterar(item.idProduto, -1)}
+                              >
+                                −
+                              </button>
                               <span className="fw-semibold px-1">{item.quantidade}</span>
                               <button
                                 className="btn btn-outline-secondary btn-sm rounded-circle"
                                 style={{ width: 32, height: 32, padding: 0, lineHeight: 1 }}
-                                onClick={() => alterar(item.id, +1)}
-                              >+</button>
+                                onClick={() => alterar(item.idProduto, +1)}
+                              >
+                                +
+                              </button>
                             </div>
                             <div className="fw-bold text-dark">
                               {fmt(item.preco * item.quantidade)}
@@ -190,24 +250,19 @@ export default function Carrinho() {
                     <span className="text-muted">Subtotal</span>
                     <span>{fmt(subtotal)}</span>
                   </div>
-                  <div className="d-flex justify-content-between small mb-2">
-                    <span className="text-muted">Frete</span>
-                    <span>{fmt(FRETE)}</span>
-                  </div>
-                  <div className="d-flex justify-content-between small mb-2 text-success">
-                    <span>Desconto</span>
-                    <span>− {fmt(DESCONTO)}</span>
-                  </div>
 
                   <div className="d-flex justify-content-between fw-bold pt-3 mt-2 border-top">
                     <span>Total do Pedido:</span>
-                    <span>{fmt(total)}</span>
+                    <span>{fmt(subtotal)}</span>
                   </div>
 
                   <button className="btn btn-primary w-100 mt-3 fw-semibold">
                     Finalizar Compra
                   </button>
-                  <button className="btn btn-outline-primary w-100 mt-2 fw-semibold">
+                  <button
+                    className="btn btn-outline-primary w-100 mt-2 fw-semibold"
+                    onClick={() => navigate("/")}
+                  >
                     Continuar Comprando
                   </button>
                 </div>

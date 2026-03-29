@@ -53,6 +53,9 @@ public class SecurityConfig {
 
                         .requestMatchers(HttpMethod.POST, "/produtos/cadastro").authenticated()
                         .requestMatchers(HttpMethod.POST, "/carrinho/adicionar").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/carrinho").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/carrinho/item/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/carrinho/item/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(

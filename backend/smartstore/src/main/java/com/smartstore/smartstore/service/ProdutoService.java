@@ -157,7 +157,7 @@ public class ProdutoService {
         produtoRepository.save(produto);
     }
 
-    public List<MeusProdutosResponseDto> listarProdutosDoVendedor(String email) {
+    public public List<MeusProdutosResponseDto> listarProdutosDoVendedor(String email) {
         return produtoRepository.findByVendedorEmail(email)
                 .stream()
                 .map(produto -> new MeusProdutosResponseDto(
@@ -166,8 +166,9 @@ public class ProdutoService {
                         produto.getPreco(),
                         produto.getCategoria().getNome(),
                         produto.getMarca().getNome(),
-                        produto.getEstoque()
+                        produto.getEstoque(),
+                        produto.getImagemUrl()
                 ))
                 .toList();
     }
-}
+    }

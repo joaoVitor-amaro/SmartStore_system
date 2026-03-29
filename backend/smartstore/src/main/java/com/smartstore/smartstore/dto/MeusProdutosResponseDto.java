@@ -6,5 +6,6 @@ public record MeusProdutosResponseDto(
         Double preco,
         String categoria,
         String marca,
-        Integer estoque
+        Integer estoque,
+        String imagemUrl
 ) {}

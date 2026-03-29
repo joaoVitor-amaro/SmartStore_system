@@ -318,34 +318,57 @@ export default function MyProducts() {
                 <div className="card-body">
                   {editingId === product.id ? (
                     <>
-                      <input
-                        className="form-control mb-2"
-                        name="nome"
-                        value={editForm.nome}
-                        onChange={handleChange}
-                        placeholder="Nome"
-                      />
-                      <input
-                        className="form-control mb-2"
-                        type="number"
-                        name="preco"
-                        value={editForm.preco}
-                        onChange={handleChange}
-                        placeholder="Preço"
-                      />
-                      <p className="card-text mb-1">Categoria: {product.categoria}</p>
-                      <p className="card-text mb-1">Marca: {product.marca}</p>
-                      <input
-                        className="form-control mb-2"
-                        type="number"
-                        name="estoque"
-                        value={editForm.estoque}
-                        onChange={handleChange}
-                        placeholder="Estoque"
-                      />
+<>
+  <div className="d-flex align-items-center gap-2 mb-2">
+    <img
+      src={product.imagemUrl}
+      alt={product.nome}
+      style={{ width: 60, height: 60, objectFit: "cover", borderRadius: 8 }}
+    />
+    <strong>{product.nome}</strong>
+  </div>
 
-                      <div className="d-flex gap-2">
-                        <button className="btn btn-success btn-sm" onClick={handleSave}>
+  <input
+    className="form-control mb-2"
+    name="nome"
+    value={editForm.nome}
+    onChange={handleChange}
+    placeholder="Nome"
+  />
+
+  <input
+    className="form-control mb-2"
+    type="number"
+    name="preco"
+    value={editForm.preco}
+    onChange={handleChange}
+    placeholder="Preço"
+  />
+
+  <p className="card-text mb-1">Categoria: {product.categoria}</p>
+  <p className="card-text mb-1">Marca: {product.marca}</p>
+
+  <input
+    className="form-control mb-2"
+    type="number"
+    name="estoque"
+    value={editForm.estoque}
+    onChange={handleChange}
+    placeholder="Estoque"
+  />
+
+  <div className="d-flex gap-2">
+    <button className="btn btn-success btn-sm" onClick={handleSave}>
+      Salvar
+    </button>
+    <button
+      className="btn btn-danger btn-sm"
+      onClick={() => setEditingId(null)}
+    >
+      Cancelar
+    </button>
+  </div>
+</>
                           Salvar
                         </button>
                         <button
@@ -358,17 +381,36 @@ export default function MyProducts() {
                     </>
                   ) : (
                     <>
-                      <h5 className="card-title">{product.nome}</h5>
-                      <p className="card-text mb-1">{formatCurrency(product.preco)}</p>
-                      <p className="card-text mb-1">Categoria: {product.categoria}</p>
-                      <p className="card-text mb-1">Marca: {product.marca}</p>
-                      <p className="card-text mb-2">Estoque: {product.estoque}</p>
+<>
+  <div className="d-flex align-items-center gap-2 mb-2">
+    <img
+      src={product.imagemUrl}
+      alt={product.nome}
+      style={{ width: 60, height: 60, objectFit: "cover", borderRadius: 8 }}
+    />
+    <h5 className="card-title mb-0">{product.nome}</h5>
+  </div>
 
-                      <div className="d-flex gap-2 flex-wrap">
-                        <button
-                          className="btn btn-warning btn-sm"
-                          onClick={() => handleEdit(product)}
-                        >
+  <p className="card-text mb-1">{formatCurrency(product.preco)}</p>
+  <p className="card-text mb-1">Categoria: {product.categoria}</p>
+  <p className="card-text mb-1">Marca: {product.marca}</p>
+  <p className="card-text mb-2">Estoque: {product.estoque}</p>
+
+  <div className="d-flex gap-2 flex-wrap">
+    <button
+      className="btn btn-warning btn-sm"
+      onClick={() => handleEdit(product)}
+    >
+      Atualizar
+    </button>
+    <button
+      className="btn btn-danger btn-sm"
+      onClick={() => abrirModalExcluir(product)}
+    >
+      Excluir
+    </button>
+  </div>
+</>
                           Atualizar
                         </button>
                         <button
