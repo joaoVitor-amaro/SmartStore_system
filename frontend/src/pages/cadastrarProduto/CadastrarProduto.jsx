@@ -59,11 +59,11 @@ export default function CadastrarProduto({categorias = []}) {
   const validar = () => {
     const novosErros = {};
     if (!form.nome.trim())       novosErros.nome      = "Informe o nome do produto.";
-    if (!form.descricao.trim())  novosErros.descricao = "Informe a descrição.";
+    if (!form.descricao.trim())  novosErros.descricao = "Informe a descriÃ§Ã£o.";
     if (!form.categoria)         novosErros.categoria = "Selecione uma categoria.";
     if (!form.marca)             novosErros.marca     = "Selecione uma marca.";
-    if (!form.fabricado.trim())  novosErros.fabricado = "Informe o local de fabricação.";
-    if (!form.preco)             novosErros.preco     = "Informe o preço.";
+    if (!form.fabricado.trim())  novosErros.fabricado = "Informe o local de fabricaÃ§Ã£o.";
+    if (!form.preco)             novosErros.preco     = "Informe o preÃ§o.";
     if (!form.quantidade)        novosErros.quantidade = "Informe a quantidade.";
     if (!form.imagem)            novosErros.imagem    = "Adicione uma imagem.";
     return novosErros;
@@ -129,7 +129,7 @@ export default function CadastrarProduto({categorias = []}) {
         <div className="bg-white rounded-3 p-4" style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.08)" }}>
           <h5 className="fw-bold mb-4">Cadastrar Novo Produto</h5>
 
-          {/* Linha 1: Nome | Descrição | Imagem */}
+          {/* Linha 1: Nome | DescriÃ§Ã£o | Imagem */}
           <div className="row g-3">
 
             <div className="col-12 col-md-3">
@@ -146,7 +146,7 @@ export default function CadastrarProduto({categorias = []}) {
             </div>
 
             <div className="col-12 col-md-6">
-              <label className="form-label fw-semibold small" htmlFor="descricao">Descrição <span className="text-danger">*</span></label>
+              <label className="form-label fw-semibold small" htmlFor="descricao">DescriÃ§Ã£o <span className="text-danger">*</span></label>
               <textarea
                 className={`form-control ${erros.descricao ? "is-invalid" : ""}`}
                 id="descricao"
@@ -276,7 +276,7 @@ export default function CadastrarProduto({categorias = []}) {
             </div>
 
             <div className="col-6 col-md">
-              <label className="form-label fw-semibold small" htmlFor="preco">Preço <span className="text-danger">*</span></label>
+              <label className="form-label fw-semibold small" htmlFor="preco">PreÃ§o <span className="text-danger">*</span></label>
               <div className="input-group">
                 <span className="input-group-text">R$</span>
                 <input
@@ -309,7 +309,7 @@ export default function CadastrarProduto({categorias = []}) {
 
           </div>
 
-          {/* Botão */}
+          {/* BotÃ£o */}
           <div className="mt-4">
             <button
               className="btn btn-primary w-100 fw-semibold"

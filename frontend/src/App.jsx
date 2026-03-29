@@ -11,6 +11,7 @@ import MyProducts from "./pages/myProducts/MyProducts";
 import CadastrarProduto from "./pages/cadastrarProduto/CadastrarProduto";
 import DetalheProduto from "./pages/detalheProdutos/DetalheProduto";
 import Carrinho from "./pages/carrinho/Carrinho";
+import "bootstrap-icons/font/bootstrap-icons.css";
 
 function App() {
   const { categorias } = useCategorias();

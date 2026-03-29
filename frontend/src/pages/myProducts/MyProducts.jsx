@@ -1,11 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import Breadcrumb from "../../components/Breadcrumb/Breadcrumb";
+import FiltrosSidebar from "../../components/FiltrosSidebar";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
 const formatCurrency = (value) =>
-  new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value);
+  new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL"
+  }).format(value);
 
 export default function MyProducts() {
   const [editingId, setEditingId] = useState(null);
@@ -14,6 +18,16 @@ export default function MyProducts() {
   const [sucesso, setSucesso] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [produtoParaExcluir, setProdutoParaExcluir] = useState(null);
+
+  const [filtros, setFiltros] = useState({
+    categoria: "",
+    marca: "",
+    precoMin: "",
+    precoMax: "",
+    disponivel: "",
+    estoqueBaixo: "",
+    ordenar: ""
+  });
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -24,14 +38,69 @@ export default function MyProducts() {
       }
     })
       .then((res) => {
-        if (!res.ok) {
-          throw new Error("Erro ao buscar meus produtos");
-        }
+        if (!res.ok) throw new Error("Erro ao buscar meus produtos");
         return res.json();
       })
       .then((data) => setProdutos(data))
       .catch((err) => console.error(err));
   }, []);
+
+  const produtosFiltrados = useMemo(() => {
+    let lista = [...produtos];
+
+    if (filtros.categoria) {
+      lista = lista.filter(
+        (p) => p.categoria?.toLowerCase() === filtros.categoria.toLowerCase()
+      );
+    }
+
+    if (filtros.marca) {
+      lista = lista.filter(
+        (p) => p.marca?.toLowerCase() === filtros.marca.toLowerCase()
+      );
+    }
+
+    if (filtros.precoMin) {
+      lista = lista.filter((p) => p.preco >= Number(filtros.precoMin));
+    }
+
+    if (filtros.precoMax) {
+      lista = lista.filter((p) => p.preco <= Number(filtros.precoMax));
+    }
+
+    if (filtros.disponivel) {
+      lista = lista.filter((p) => p.estoque > 0);
+    }
+
+    if (filtros.estoqueBaixo) {
+      lista = lista.filter((p) => p.estoque < 10);
+    }
+
+    switch (filtros.ordenar) {
+      case "precoAsc":
+        lista.sort((a, b) => a.preco - b.preco);
+        break;
+      case "precoDesc":
+        lista.sort((a, b) => b.preco - a.preco);
+        break;
+      case "nomeAsc":
+        lista.sort((a, b) => a.nome.localeCompare(b.nome));
+        break;
+      case "nomeDesc":
+        lista.sort((a, b) => b.nome.localeCompare(a.nome));
+        break;
+      case "estoqueAsc":
+        lista.sort((a, b) => a.estoque - b.estoque);
+        break;
+      case "estoqueDesc":
+        lista.sort((a, b) => b.estoque - a.estoque);
+        break;
+      default:
+        break;
+    }
+
+    return lista;
+  }, [produtos, filtros]);
 
   const handleEdit = (product) => {
     setEditingId(product.id);
@@ -55,9 +124,7 @@ export default function MyProducts() {
         })
       });
 
-      if (!res.ok) {
-        throw new Error("Erro ao atualizar produto");
-      }
+      if (!res.ok) throw new Error("Erro ao atualizar produto");
 
       setProdutos((prev) =>
         prev.map((p) => (p.id === editingId ? { ...p, ...editForm, id: p.id } : p))
@@ -87,16 +154,17 @@ export default function MyProducts() {
     try {
       const token = localStorage.getItem("token");
 
-      const res = await fetch(`http://localhost:8080/produtos/${produtoParaExcluir.id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`
+      const res = await fetch(
+        `http://localhost:8080/produtos/${produtoParaExcluir.id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
         }
-      });
+      );
 
-      if (!res.ok) {
-        throw new Error("Erro ao excluir produto");
-      }
+      if (!res.ok) throw new Error("Erro ao excluir produto");
 
       setProdutos((prev) => prev.filter((p) => p.id !== produtoParaExcluir.id));
       fecharModalExcluir();
@@ -132,175 +200,249 @@ export default function MyProducts() {
         ]}
       />
 
-      <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 gap-2">
-        <h2>Produtos Cadastrados</h2>
-        <div className="d-flex gap-2 flex-wrap">
-          <Link to="/cadastrarProduto">
-            <button className="btn btn-primary">+ Cadastrar Produto</button>
-          </Link>
-          <button className="btn btn-secondary">Gerar Relatório (PDF)</button>
-        </div>
-      </div>
+      <div className="d-flex flex-column flex-lg-row gap-4">
+        <FiltrosSidebar
+          mostrarEstoqueBaixo={true}
+          filtrosAtuais={filtros}
+          onAplicar={setFiltros}
+        />
 
-      <div className="d-none d-md-block">
-        <div className="table-responsive bg-white p-3 rounded shadow-sm">
-          <table className="table table-hover align-middle">
-            <thead className="table-light">
-              <tr>
-                <th></th>
-                <th>Nome</th>
-                <th>Preço</th>
-                <th>Categoria</th>
-                <th>Estoque</th>
-                <th>Ações</th>
-              </tr>
-            </thead>
+        <div className="flex-grow-1">
+          <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 gap-2">
+            <h2>Produtos Cadastrados</h2>
+            <div className="d-flex gap-2 flex-wrap">
+              <Link to="/cadastrarProduto">
+                <button className="btn btn-primary">+ Cadastrar Produto</button>
+              </Link>
+              <button className="btn btn-secondary">Gerar Relatório (PDF)</button>
+            </div>
+          </div>
 
-            <tbody>
-              {produtos.map((product) => (
-                <tr key={product.id}>
-                  {editingId === product.id ? (
-                    <>
-                      <td>
+          <div className="d-none d-md-block">
+            <div className="table-responsive bg-white p-3 rounded shadow-sm">
+              <table className="table table-hover align-middle">
+                <thead className="table-light">
+                  <tr>
+                    <th></th>
+                    <th>Nome</th>
+                    <th>Preço</th>
+                    <th>Categoria</th>
+                    <th>Marca</th>
+                    <th>Estoque</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {produtosFiltrados.map((product) => (
+                    <tr key={product.id}>
+                      {editingId === product.id ? (
+                        <>
+                          <td>
+                            <img
+                              src={product.imagemUrl}
+                              alt={product.nome}
+                              style={{
+                                width: 48,
+                                height: 48,
+                                objectFit: "cover",
+                                borderRadius: 8
+                              }}
+                            />
+                          </td>
+                          <td>
+                            <input
+                              className="form-control"
+                              name="nome"
+                              value={editForm.nome || ""}
+                              onChange={handleChange}
+                            />
+                          </td>
+                          <td>
+                            <input
+                              className="form-control"
+                              type="number"
+                              name="preco"
+                              value={editForm.preco || ""}
+                              onChange={handleChange}
+                            />
+                          </td>
+                          <td>{product.categoria}</td>
+                          <td>{product.marca}</td>
+                          <td>
+                            <input
+                              className="form-control"
+                              type="number"
+                              name="estoque"
+                              value={editForm.estoque || ""}
+                              onChange={handleChange}
+                            />
+                          </td>
+                          <td>
+                            <button
+                              className="btn btn-success btn-sm me-1"
+                              onClick={handleSave}
+                            >
+                              Salvar
+                            </button>
+                            <button
+                              className="btn btn-danger btn-sm"
+                              onClick={() => setEditingId(null)}
+                            >
+                              Cancelar
+                            </button>
+                          </td>
+                        </>
+                      ) : (
+                        <>
+                          <td>
+                            <img
+                              src={product.imagemUrl}
+                              alt={product.nome}
+                              style={{
+                                width: 48,
+                                height: 48,
+                                objectFit: "cover",
+                                borderRadius: 8
+                              }}
+                            />
+                          </td>
+                          <td>{product.nome}</td>
+                          <td>{formatCurrency(product.preco)}</td>
+                          <td>{product.categoria}</td>
+                          <td>{product.marca}</td>
+                          <td>{product.estoque}</td>
+                          <td>
+                            <button
+                              className="btn btn-warning btn-sm me-1"
+                              onClick={() => handleEdit(product)}
+                            >
+                              Atualizar
+                            </button>
+                            <button
+                              className="btn btn-danger btn-sm"
+                              onClick={() => abrirModalExcluir(product)}
+                            >
+                              Excluir
+                            </button>
+                          </td>
+                        </>
+                      )}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div className="d-md-none">
+            <div className="d-flex flex-column gap-3">
+              {produtosFiltrados.map((product) => (
+                <div key={product.id} className="card shadow-sm">
+                  <div className="card-body">
+                    {editingId === product.id ? (
+                      <>
+                        <div className="d-flex align-items-center gap-2 mb-2">
                           <img
                             src={product.imagemUrl}
                             alt={product.nome}
-                            style={{ width: 48, height: 48, objectFit: "cover", borderRadius: 8 }}
+                            style={{
+                              width: 60,
+                              height: 60,
+                              objectFit: "cover",
+                              borderRadius: 8
+                            }}
                           />
-                      </td>
-                      <td>
+                          <strong>{product.nome}</strong>
+                        </div>
+
                         <input
-                          className="form-control"
+                          className="form-control mb-2"
                           name="nome"
-                          value={editForm.nome}
+                          value={editForm.nome || ""}
                           onChange={handleChange}
+                          placeholder="Nome"
                         />
-                      </td>
-                      <td>
+
                         <input
-                          className="form-control"
+                          className="form-control mb-2"
                           type="number"
                           name="preco"
-                          value={editForm.preco}
+                          value={editForm.preco || ""}
                           onChange={handleChange}
+                          placeholder="Preço"
                         />
-                      </td>
-                      <td>{product.categoria}</td>
-                      <td>
+
+                        <p className="card-text mb-1">Categoria: {product.categoria}</p>
+                        <p className="card-text mb-1">Marca: {product.marca}</p>
+
                         <input
-                          className="form-control"
+                          className="form-control mb-2"
                           type="number"
                           name="estoque"
-                          value={editForm.estoque}
+                          value={editForm.estoque || ""}
                           onChange={handleChange}
+                          placeholder="Estoque"
                         />
-                      </td>
-                      <td>
-                        <button className="btn btn-success btn-sm me-1" onClick={handleSave}>
-                          Salvar
-                        </button>
-                        <button className="btn btn-danger btn-sm" onClick={() => setEditingId(null)}>
-                          Cancelar
-                        </button>
-                      </td>
-                    </>
-                  ) : (
-                    <>
-                      <td>
-                        <img
-                          src={product.imagemUrl}
-                          alt={product.nome}
-                          style={{ width: 48, height: 48, objectFit: "cover", borderRadius: 8 }}
-                        />
-                      </td>
-                      <td>{product.nome}</td>
-                      <td>{formatCurrency(product.preco)}</td>
-                      <td>{product.categoria}</td>
-                      <td>{product.estoque}</td>
-                      <td>
-                        <button className="btn btn-warning btn-sm me-1" onClick={() => handleEdit(product)}>
-                          Atualizar
-                        </button>
-                        <button
-                          className="btn btn-danger btn-sm"
-                          onClick={() => abrirModalExcluir(product)}
-                        >
-                          Excluir
-                        </button>
-                      </td>
-                    </>
-                  )}
-                </tr>
+
+                        <div className="d-flex gap-2">
+                          <button className="btn btn-success btn-sm" onClick={handleSave}>
+                            Salvar
+                          </button>
+                          <button
+                            className="btn btn-danger btn-sm"
+                            onClick={() => setEditingId(null)}
+                          >
+                            Cancelar
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="d-flex align-items-center gap-2 mb-2">
+                          <img
+                            src={product.imagemUrl}
+                            alt={product.nome}
+                            style={{
+                              width: 60,
+                              height: 60,
+                              objectFit: "cover",
+                              borderRadius: 8
+                            }}
+                          />
+                          <h5 className="card-title mb-0">{product.nome}</h5>
+                        </div>
+
+                        <p className="card-text mb-1">
+                          {formatCurrency(product.preco)}
+                        </p>
+                        <p className="card-text mb-1">
+                          Categoria: {product.categoria}
+                        </p>
+                        <p className="card-text mb-1">Marca: {product.marca}</p>
+                        <p className="card-text mb-2">Estoque: {product.estoque}</p>
+
+                        <div className="d-flex gap-2 flex-wrap">
+                          <button
+                            className="btn btn-warning btn-sm"
+                            onClick={() => handleEdit(product)}
+                          >
+                            Atualizar
+                          </button>
+                          <button
+                            className="btn btn-danger btn-sm"
+                            onClick={() => abrirModalExcluir(product)}
+                          >
+                            Excluir
+                          </button>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </div>
               ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div className="d-md-none">
-        <div className="d-flex flex-column gap-3">
-          {produtos.map((product) => (
-            <div key={product.id} className="card shadow-sm">
-              <div className="card-body">
-                {editingId === product.id ? (
-                  <>
-                    <input
-                      className="form-control mb-2"
-                      name="nome"
-                      value={editForm.nome}
-                      onChange={handleChange}
-                      placeholder="Nome"
-                    />
-                    <input
-                      className="form-control mb-2"
-                      type="number"
-                      name="preco"
-                      value={editForm.preco}
-                      onChange={handleChange}
-                      placeholder="Preço"
-                    />
-                    <p className="card-text mb-1">{product.categoria}</p>
-                    <input
-                      className="form-control mb-2"
-                      type="number"
-                      name="estoque"
-                      value={editForm.estoque}
-                      onChange={handleChange}
-                      placeholder="Estoque"
-                    />
-
-                    <div className="d-flex gap-2">
-                      <button className="btn btn-success btn-sm" onClick={handleSave}>
-                        Salvar
-                      </button>
-                      <button className="btn btn-danger btn-sm" onClick={() => setEditingId(null)}>
-                        Cancelar
-                      </button>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <h5 className="card-title">{product.nome}</h5>
-                    <p className="card-text mb-1">{formatCurrency(product.preco)}</p>
-                    <p className="card-text mb-1">{product.categoria}</p>
-                    <p className="card-text mb-2">Estoque: {product.estoque}</p>
-
-                    <div className="d-flex gap-2 flex-wrap">
-                      <button className="btn btn-warning btn-sm" onClick={() => handleEdit(product)}>
-                        Atualizar
-                      </button>
-                      <button
-                        className="btn btn-danger btn-sm"
-                        onClick={() => abrirModalExcluir(product)}
-                      >
-                        Excluir
-                      </button>
-                    </div>
-                  </>
-                )}
-              </div>
             </div>
-          ))}
+          </div>
         </div>
       </div>
 
@@ -324,15 +466,14 @@ export default function MyProducts() {
               </div>
 
               <div className="modal-body pt-2">
-                <p className="mb-2">
-                  Tem certeza que deseja excluir este produto?
-                </p>
+                <p className="mb-2">Tem certeza que deseja excluir este produto?</p>
 
                 {produtoParaExcluir && (
                   <div className="bg-light rounded-3 p-3 border">
                     <div className="fw-semibold">{produtoParaExcluir.nome}</div>
                     <div className="text-muted small">
-                      {formatCurrency(produtoParaExcluir.preco)} • {produtoParaExcluir.categoria}
+                      {formatCurrency(produtoParaExcluir.preco)} •{" "}
+                      {produtoParaExcluir.categoria}
                     </div>
                   </div>
                 )}
