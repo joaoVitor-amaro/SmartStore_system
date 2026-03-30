@@ -8,6 +8,11 @@ export default function CadastroUsuario() {
     const [loading, setLoading] = useState(false);   
     const [error, setError] = useState(null);         
     const [sucesso, setSucesso] = useState(null); 
+    const ESTADOS = [
+        "AC","AL","AP","AM","BA","CE","DF","ES","GO","MA",
+        "MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN",
+        "RS","RO","RR","SC","SP","SE","TO"
+    ];
     const [form, setForm] = useState({
         nome: "",
         email: "",
@@ -16,6 +21,13 @@ export default function CadastroUsuario() {
         torceFlamengo: false,
         assisteOnePiece: false,
         DeSousa: false,
+        
+        cep: "",
+        rua: "",
+        numero: "",
+        bairro: "",
+        cidade: "",
+        estado: "",
     });
 
     const handleChange = (e) => {
@@ -32,12 +44,18 @@ export default function CadastroUsuario() {
         }
         const {confirmarSenha, ...dadosParaEnviar} = form;
         const payload = {
-            nome:           dadosParaEnviar.nome,
-            email:          dadosParaEnviar.email,
-            torceFlamengo:  form.torceFlamengo  ? "S" : "N",
+            nome: dadosParaEnviar.nome,
+            email: dadosParaEnviar.email,
+            torceFlamengo: form.torceFlamengo  ? "S" : "N",
             assisteOnePiece: form.assisteOnePiece ? "S" : "N",
-            deSousa:        form.DeSousa        ? "S" : "N",
-            senha:          dadosParaEnviar.senha,
+            deSousa: form.DeSousa        ? "S" : "N",
+            senha: dadosParaEnviar.senha,
+            cep: dadosParaEnviar.cep,
+            rua: dadosParaEnviar.rua,
+            numero: dadosParaEnviar.numero,
+            bairro: dadosParaEnviar.bairro,
+            cidade: dadosParaEnviar.cidade,
+            estado: dadosParaEnviar.estado,
         };
         setLoading(true);
         setError(null);
@@ -136,6 +154,81 @@ export default function CadastroUsuario() {
                         onChange={handleChange}
                         required
                     />
+                    </div>
+                    <div className="mb-4">
+                        <h6 className="fw-semibold mb-3 text-secondary">Endereço</h6>
+
+                        <div className="row mb-3">
+                            <div className="col-12 col-md-4 mb-3 mb-md-0">
+                                <label className="form-label">CEP</label>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    name="cep"
+                                    value={form.cep}
+                                    onChange={handleChange}
+                                    placeholder="00000-000"
+                                    maxLength={9}
+                                />
+                            </div>
+                            <div className="col-12 col-md-6 mb-3 mb-md-0">
+                                <label className="form-label">Rua</label>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    name="rua"
+                                    value={form.rua}
+                                    onChange={handleChange}
+                                />
+                            </div>
+                            <div className="col-12 col-md-2">
+                                <label className="form-label">Número</label>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    name="numero"
+                                    value={form.numero}
+                                    onChange={handleChange}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="row">
+                            <div className="col-12 col-md-4 mb-3 mb-md-0">
+                                <label className="form-label">Bairro</label>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    name="bairro"
+                                    value={form.bairro}
+                                    onChange={handleChange}
+                                />
+                            </div>
+                            <div className="col-12 col-md-5 mb-3 mb-md-0">
+                                <label className="form-label">Cidade</label>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    name="cidade"
+                                    value={form.cidade}
+                                    onChange={handleChange}
+                                />
+                            </div>
+                            <div className="col-12 col-md-3">
+                                <label className="form-label">Estado</label>
+                                <select
+                                    className="form-select"
+                                    name="estado"
+                                    value={form.estado}
+                                    onChange={handleChange}
+                                >
+                                    <option value="">UF</option>
+                                    {ESTADOS.map(uf => (
+                                        <option key={uf} value={uf}>{uf}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        </div>
                     </div>
                     <div className="mb-4">
                         <div className="form-check mb-2">
