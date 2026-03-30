@@ -12,6 +12,7 @@ import CadastrarProduto from "./pages/cadastrarProduto/CadastrarProduto";
 import DetalheProduto from "./pages/detalheProdutos/DetalheProduto";
 import Carrinho from "./pages/carrinho/Carrinho";
 import ConfirmOrder from "./pages/checkout/ConfirmOrder";
+import "bootstrap-icons/font/bootstrap-icons.css";
 
 function App() {
   const { categorias } = useCategorias();

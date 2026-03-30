@@ -8,10 +8,8 @@ import com.smartstore.smartstore.model.Categoria;
 import com.smartstore.smartstore.model.Cliente;
 import com.smartstore.smartstore.model.Marca;
 import com.smartstore.smartstore.model.Produto;
-import com.smartstore.smartstore.repository.CategoriaRepository;
-import com.smartstore.smartstore.repository.ClienteRepository;
-import com.smartstore.smartstore.repository.MarcaRepository;
-import com.smartstore.smartstore.repository.ProdutoRepository;
+import com.smartstore.smartstore.repository.ProdutoCatalogoView;
+import com.smartstore.smartstore.repository.*;
 import com.smartstore.smartstore.dto.MeusProdutosResponseDto;
 import com.smartstore.smartstore.dto.ProdutoUpdateRequestDto;
 import org.springframework.stereotype.Service;
@@ -40,32 +38,32 @@ public class ProdutoService {
     }
 
     public List<ProdutoHomeResponseDto> listarProdutosHome() {
-        List<Produto> produtos = produtoRepository.findAll();
-        return converterParaHomeDto(produtos);
+        List<ProdutoCatalogoView> produtos = produtoRepository.buscarCatalogoComFiltros(
+                null, null, null, null, null, null, null, null
+        );
+        return converterParaHomeDtoView(produtos);
     }
 
     public List<ProdutoHomeResponseDto> listarProdutosPorCategoria(String categoria) {
-        List<Produto> produtos = produtoRepository.findByCategoriaNomeIgnoreCase(categoria);
-        return converterParaHomeDto(produtos);
+        List<ProdutoCatalogoView> produtos = produtoRepository.buscarCatalogoComFiltros(
+                null, categoria, null, null, null, null, null, null
+        );
+        return converterParaHomeDtoView(produtos);
     }
 
-    public List<ProdutoHomeResponseDto> buscarProdutos(String nome, String categoria) {
-        List<Produto> produtos;
+    public List<ProdutoHomeResponseDto> buscarProdutos(String nome,
+                                                       String categoria,
+                                                       String marca,
+                                                       Double precoMin,
+                                                       Double precoMax,
+                                                       Boolean disponivel,
+                                                       Boolean estoqueBaixo,
+                                                       String ordenar) {
+        List<ProdutoCatalogoView> produtos = produtoRepository.buscarCatalogoComFiltros(
+                nome, categoria, marca, precoMin, precoMax, disponivel, estoqueBaixo, ordenar
+        );
 
-        boolean temNome = nome != null && !nome.isBlank();
-        boolean temCategoria = categoria != null && !categoria.isBlank();
-
-        if (temNome && temCategoria) {
-            produtos = produtoRepository.findByNomeContainingIgnoreCaseAndCategoriaNomeIgnoreCase(nome, categoria);
-        } else if (temNome) {
-            produtos = produtoRepository.findByNomeContainingIgnoreCase(nome);
-        } else if (temCategoria) {
-            produtos = produtoRepository.findByCategoriaNomeIgnoreCase(categoria);
-        } else {
-            produtos = produtoRepository.findAll();
-        }
-
-        return converterParaHomeDto(produtos);
+        return converterParaHomeDtoView(produtos);
     }
 
     public ProdutoDetalheResponseDto buscarDetalhePorId(Long id) {
@@ -85,14 +83,16 @@ public class ProdutoService {
         );
     }
 
-    private List<ProdutoHomeResponseDto> converterParaHomeDto(List<Produto> produtos) {
+    private List<ProdutoHomeResponseDto> converterParaHomeDtoView(List<ProdutoCatalogoView> produtos) {
         return produtos.stream()
                 .map(p -> new ProdutoHomeResponseDto(
                         p.getId(),
                         p.getNome(),
                         p.getPreco(),
                         p.getImagemUrl(),
-                        p.getCategoria() != null ? p.getCategoria().getNome() : ""
+                        p.getCategoriaNome(),
+                        p.getMarcaNome(),
+                        p.getEstoque()
                 ))
                 .toList();
     }
@@ -165,9 +165,10 @@ public class ProdutoService {
                         produto.getNome(),
                         produto.getPreco(),
                         produto.getCategoria().getNome(),
+                        produto.getMarca().getNome(),
                         produto.getEstoque(),
                         produto.getImagemUrl()
                 ))
                 .toList();
     }
-}
+    }
