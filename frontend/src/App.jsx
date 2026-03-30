@@ -11,6 +11,7 @@ import MyProducts from "./pages/myProducts/MyProducts";
 import CadastrarProduto from "./pages/cadastrarProduto/CadastrarProduto";
 import DetalheProduto from "./pages/detalheProdutos/DetalheProduto";
 import Carrinho from "./pages/carrinho/Carrinho";
+import ConfirmOrder from "./pages/checkout/ConfirmOrder";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
 function App() {
@@ -31,6 +32,7 @@ function App() {
             <Route path="/meusProdutos" element={<MyProducts />} />
             <Route path="/cadastrarProduto" element={<CadastrarProduto categorias={categorias} />} />
             <Route path="/carrinho" element={<Carrinho />} />
+            <Route path="/confirmarPedido" element={<ConfirmOrder />} />
           </Routes>
         </main>
       </div>

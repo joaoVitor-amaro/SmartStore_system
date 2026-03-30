@@ -1,0 +1,62 @@
+/* TÍTULOS */
+.ss-page-title { font-size:30px;font-weight:700;color:#1a1a2e; }
+.ss-page-subtitle { font-size:14px;color:#607080; }
+
+/* CARDS */
+.ss-card { border-radius:14px!important;box-shadow:0 2px 8px rgba(0,0,0,.06)!important;border:none!important; }
+.ss-section-title { font-size:15px;font-weight:700;color:#1565c0;border-bottom:2px solid #e8f0fe;padding-bottom:10px; }
+
+/* FORM */
+.form-control,.form-select { border:1.5px solid #dde3ec!important;border-radius:8px!important;background:#f9fbfd!important;font-size:14px;color:#1a1a2e!important; }
+.form-control:focus,.form-select:focus { border-color:#1565c0!important;background:#fff!important;box-shadow:0 0 0 3px rgba(21,101,192,.1)!important; }
+.form-label { font-size:12px;font-weight:600;color:#607080;letter-spacing:.3px;margin-bottom:4px; }
+.ss-calc-btn { background:#1565c0!important;border:none!important;border-radius:8px!important;font-weight:600;font-size:13px;white-space:nowrap; }
+.ss-calc-btn:hover { background:#1255a3!important; }
+
+/* ENTREGA */
+.ss-delivery-card { border:1.5px solid #dde3ec;border-radius:10px;padding:14px;cursor:pointer;background:#f9fbfd;transition:all .18s;user-select:none; }
+.ss-delivery-card.active { border:2px solid #1565c0!important;background:#e8f0fe; }
+.ss-delivery-card input[type=radio] { accent-color:#1565c0; }
+.ss-d-label { font-weight:700;font-size:13px;color:#1a1a2e; }
+.ss-d-price { font-weight:700;font-size:14px;color:#1565c0;margin:2px 0; }
+.ss-d-days { font-size:11px;color:#607080; }
+
+/* RESUMO */
+.ss-summary-card { border-radius:16px!important;box-shadow:0 4px 16px rgba(0,0,0,.08)!important;border:none!important;position:sticky;top:80px; }
+.ss-summary-title { font-size:16px;font-weight:700;color:#1a1a2e; }
+.ss-thumb { width:44px;height:44px;border-radius:10px;background:#f0f4f8;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0; }
+.ss-pname { font-weight:600;font-size:13px;color:#1a1a2e; }
+.ss-pqty { font-size:12px;color:#8899aa; }
+.ss-pprice { font-weight:700;font-size:13px;color:#1a1a2e;white-space:nowrap; }
+.ss-sum-lbl { font-size:13px;color:#607080; }
+.ss-sum-val { font-size:13px;font-weight:500;color:#1a1a2e; }
+.ss-total-lbl { font-size:14px;font-weight:700;color:#1a1a2e; }
+.ss-total-val { font-size:16px;font-weight:800;color:#1565c0; }
+
+/* BOTÕES */
+.ss-btn-primary { background:linear-gradient(135deg,#1565c0,#1976d2)!important;border:none!important;border-radius:10px!important;font-weight:700!important;font-size:14px!important;box-shadow:0 4px 12px rgba(21,101,192,.3)!important;padding:12px!important; }
+.ss-btn-primary:hover { opacity:.92; }
+.ss-btn-secondary { background:#f0f4f8!important;color:#607080!important;border:1.5px solid #dde3ec!important;border-radius:10px!important;font-weight:600!important;font-size:13px!important;padding:10px!important; }
+
+/* BARRA MOBILE */
+.ss-mob-bar { display:none;position:fixed;bottom:0;left:0;right:0;background:#1565c0;color:#fff;padding:12px 20px;justify-content:space-between;align-items:center;z-index:1050;cursor:pointer;box-shadow:0 -4px 16px rgba(0,0,0,.15); }
+.ss-mob-hint { font-size:12px;opacity:.8; }
+.ss-mob-total { font-size:18px;font-weight:800; }
+.ss-mob-toggle { font-size:13px;font-weight:600;background:rgba(255,255,255,.2);padding:6px 12px;border-radius:20px; }
+
+/* DRAWER MOBILE */
+.ss-drawer { position:fixed;bottom:0;left:0;right:0;background:#fff;border-radius:20px 20px 0 0;padding:20px 20px 90px;z-index:1049;max-height:75vh;overflow-y:auto;box-shadow:0 -8px 32px rgba(0,0,0,.18);transform:translateY(100%);transition:transform .28s cubic-bezier(.4,0,.2,1); }
+.ss-drawer.open { transform:translateY(0); }
+.ss-drawer-handle { width:40px;height:4px;background:#dde3ec;border-radius:2px;margin:0 auto 20px; }
+.ss-overlay { display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:1048; }
+.ss-overlay.open { display:block; }
+
+/* RESPONSIVO */
+@media (max-width:767.98px) {
+  .ss-page-title { font-size:22px; }
+  .ss-sidebar-col { display:none; }
+  .ss-mob-bar { display:flex; }
+  .ss-main-content { padding-bottom:80px; }
+  .ss-user-name { display:none; }
+  .ss-search-bar { display:none!important; }
+}

@@ -1,8 +1,6 @@
 package com.smartstore.smartstore.service;
 
-import com.smartstore.smartstore.dto.AdicionarItemDto;
-import com.smartstore.smartstore.dto.CarrinhoResponseDto;
-import com.smartstore.smartstore.dto.ItemCarrinhoResponseDto;
+import com.smartstore.smartstore.dto.*;
 import com.smartstore.smartstore.model.Carrinho;
 import com.smartstore.smartstore.model.Cliente;
 import com.smartstore.smartstore.model.ItemCarrinho;
@@ -153,5 +151,26 @@ public class CarrinhoService {
         ItemCarrinho item = itemCarrinhoRepository.findByCarrinhoAndProduto(carrinho, produto)
                 .orElseThrow(() -> new IllegalArgumentException("Item não encontrado"));
         itemCarrinhoRepository.delete(item);
+    }
+
+    public CarrinhoDto buscarCarrinhoDoCliente(String email) {
+        Cliente cliente = clienteRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Cliente não encotrado"));
+        Carrinho carrinho = carrinhoRepository.findByCliente(cliente)
+                .orElseThrow(() -> new IllegalArgumentException("Carrinho não encontrado"));
+        List<ItemCarrinhoDto> itens = carrinho.getItens().stream()
+                .map(item -> new ItemCarrinhoDto(
+                        item.getProduto().getId(),
+                        item.getProduto().getNome(),
+                        item.getProduto().getImagemUrl(),
+                        item.getProduto().getPreco(),
+                        item.getQuantidade(),
+                        item.getProduto().getPreco() * item.getQuantidade()
+                ))
+                .toList();
+        Double total = itens.stream()
+                .mapToDouble(ItemCarrinhoDto::getSubtotal)
+                .sum();
+        return new CarrinhoDto(carrinho.getId(), itens, total);
     }
 }

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
 const fmt = (v) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -256,9 +257,11 @@ export default function Carrinho() {
                     <span>{fmt(subtotal)}</span>
                   </div>
 
-                  <button className="btn btn-primary w-100 mt-3 fw-semibold">
-                    Finalizar Compra
-                  </button>
+                  <Link to="/confirmarPedido">
+                    <button className="btn btn-primary w-100 mt-3 fw-semibold">
+                      Finalizar Compra
+                    </button>
+                </Link>
                   <button
                     className="btn btn-outline-primary w-100 mt-2 fw-semibold"
                     onClick={() => navigate("/")}

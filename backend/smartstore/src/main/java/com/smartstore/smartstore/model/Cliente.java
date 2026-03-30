@@ -35,6 +35,13 @@ public class Cliente {
     @Column(nullable = false)
     private String senha;
 
+    private String cep;
+    private String rua;
+    private String numero;
+    private String bairro;
+    private String cidade;
+    private String estado;
+
     @OneToMany(mappedBy = "vendedor")
     private List<Produto> produtos;
 
@@ -44,12 +51,19 @@ public class Cliente {
     @OneToMany(mappedBy = "cliente")
     private List<Compra> compras;
 
-    public Cliente(String nome, String email, Character torceFlamengo, Character assisteOnePiece, Character deSousa, String senha) {
+    public Cliente(String nome, String email, Character torceFlamengo, Character assisteOnePiece, Character deSousa, String senha, String cep, String rua, String numero, String bairro, String cidade, String estado) {
+        this.id = id;
         this.nome = nome;
         this.email = email;
         this.torceFlamengo = torceFlamengo;
         this.assisteOnePiece = assisteOnePiece;
         this.deSousa = deSousa;
         this.senha = senha;
+        this.cep = cep;
+        this.rua = rua;
+        this.numero = numero;
+        this.bairro = bairro;
+        this.cidade = cidade;
+        this.estado = estado;
     }
 }

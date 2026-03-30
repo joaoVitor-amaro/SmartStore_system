@@ -1,12 +1,8 @@
 package com.smartstore.smartstore.dto;
 
-public class UserCreateRequestDto {
+public class GetClienteResponseDto {
     private String nome;
     private String email;
-    private Character torceFlamengo;
-    private Character assisteOnePiece;
-    private Character deSousa;
-    private String senha;
     private String cep;
     private String rua;
     private String numero;
@@ -14,28 +10,23 @@ public class UserCreateRequestDto {
     private String cidade;
     private String estado;
 
+    public GetClienteResponseDto(String nome, String email, String cep, String rua, String numero, String bairro, String cidade, String estado) {
+        this.nome = nome;
+        this.email = email;
+        this.cep = cep;
+        this.rua = rua;
+        this.numero = numero;
+        this.bairro = bairro;
+        this.cidade = cidade;
+        this.estado = estado;
+    }
+
     public String getNome() {
         return nome;
     }
 
     public String getEmail() {
         return email;
-    }
-
-    public Character getTorceFlamengo() {
-        return torceFlamengo;
-    }
-
-    public Character getAssisteOnePiece() {
-        return assisteOnePiece;
-    }
-
-    public Character getDeSousa() {
-        return deSousa;
-    }
-
-    public String getSenha() {
-        return senha;
     }
 
     public String getCep() {
