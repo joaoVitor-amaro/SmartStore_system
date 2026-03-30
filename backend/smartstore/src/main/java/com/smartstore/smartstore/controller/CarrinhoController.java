@@ -1,8 +1,8 @@
 package com.smartstore.smartstore.controller;
 
 import com.smartstore.smartstore.dto.AdicionarItemDto;
+import com.smartstore.smartstore.dto.CarrinhoDto;
 import com.smartstore.smartstore.dto.CarrinhoResponseDto;
-import com.smartstore.smartstore.model.Carrinho;
 import com.smartstore.smartstore.response.ApiResponse;
 import com.smartstore.smartstore.service.CarrinhoService;
 import org.springframework.http.HttpStatus;
@@ -61,5 +61,15 @@ public class CarrinhoController {
             Authentication authentication) {
         carrinhoService.deletarCarrinho(authentication.getName(), idProduto);
         return ResponseEntity.ok(new ApiResponse<>(true, "Item removido do carrinho", null, null));
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<ApiResponse<CarrinhoDto>> getCarrinhoDoCliente(
+            Authentication authentication) {
+
+        CarrinhoDto carrinho = carrinhoService
+                .buscarCarrinhoDoCliente(authentication.getName());
+
+        return ResponseEntity.ok(new ApiResponse<>(true, "Carrinho encontrado", carrinho, null));
     }
 }
