@@ -1,5 +1,6 @@
 package com.smartstore.smartstore.controller;
 
+import com.smartstore.smartstore.dto.ClienteDto;
 import com.smartstore.smartstore.dto.GetClienteResponseDto;
 import com.smartstore.smartstore.dto.UserCreateRequestDto;
 import com.smartstore.smartstore.dto.UserCreateResponseDto;
@@ -40,6 +41,18 @@ public class ClienteController {
                 true,
                 "Cliente encontrado",
                 cliente,
+                null
+        );
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @PutMapping("/atualizar")
+    public ResponseEntity<ApiResponse<ClienteDto>> atualizarCliente(@RequestBody ClienteDto dto, Authentication authentication) {
+        ClienteDto clienteDto = clienteService.atualizarCliente(authentication.getName(), dto);
+        ApiResponse<ClienteDto> response = new ApiResponse<>(
+                true,
+                "Cliente atualizado",
+                clienteDto,
                 null
         );
         return ResponseEntity.status(HttpStatus.OK).body(response);

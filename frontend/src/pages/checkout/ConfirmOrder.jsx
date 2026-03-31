@@ -120,6 +120,40 @@ export default function ConfirmOrder() {
 
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
+  async function handleContinuar() {
+      try {
+          const token = localStorage.getItem("token");
+          const headers = {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+          };
+
+          const res = await fetch(`${BASE_URL}/cliente/atualizar`, {
+              method: "PUT",
+              headers,
+              body: JSON.stringify({
+                  nome:   form.nome,
+                  email:  form.email,
+                  cep:    form.cep,
+                  rua:    form.rua,
+                  numero: form.numero,
+                  bairro: form.bairro,
+                  cidade: form.cidade,
+                  estado: form.estado,
+              }),
+          });
+
+          const data = await res.json();
+          if (!data.success) throw new Error(data.message ?? "Erro ao atualizar");
+
+          // navegar para pagamento
+          // navigate("/pagamento", { state: { total } });
+          alert("Dados atualizados! Ir para pagamento...");
+
+      } catch (err) {
+          alert("Erro: " + err.message);
+      }
+  }
 
   const selectedDelivery = deliveryOptions.find((d) => d.id === delivery);
 
@@ -222,7 +256,7 @@ export default function ConfirmOrder() {
           <span className="ss-total-val">{fmt(total)}</span>
         </div>
 
-        <button className="btn btn-primary ss-btn-primary w-100 mb-2">
+        <button className="btn btn-primary ss-btn-primary w-100 mb-2" onClick={handleContinuar}>
           Continuar para Pagamento →
         </button>
 

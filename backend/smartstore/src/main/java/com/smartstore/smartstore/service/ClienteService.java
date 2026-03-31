@@ -1,5 +1,6 @@
 package com.smartstore.smartstore.service;
 
+import com.smartstore.smartstore.dto.ClienteDto;
 import com.smartstore.smartstore.dto.GetClienteResponseDto;
 import com.smartstore.smartstore.dto.UserCreateRequestDto;
 import com.smartstore.smartstore.dto.UserCreateResponseDto;
@@ -57,5 +58,21 @@ public class ClienteService {
                 cliente.getAssisteOnePiece(),
                 cliente.getDeSousa()
         );
+    }
+
+    public ClienteDto atualizarCliente(String email, ClienteDto dto) {
+        Cliente cliente = clienteRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Cliente não encontrado"));
+        cliente.setNome(dto.getNome());
+        cliente.setEmail(dto.getEmail());
+        cliente.setCep(dto.getCep());
+        cliente.setRua(dto.getRua());
+        cliente.setNumero(dto.getNumero());
+        cliente.setBairro(dto.getBairro());
+        cliente.setCidade(dto.getCidade());
+        cliente.setEstado(dto.getEstado());
+
+        clienteRepository.save(cliente);
+        return new ClienteDto(cliente);
     }
 }
