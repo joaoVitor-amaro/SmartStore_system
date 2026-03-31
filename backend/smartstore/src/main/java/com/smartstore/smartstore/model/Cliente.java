@@ -66,4 +66,15 @@ public class Cliente {
         this.cidade = cidade;
         this.estado = estado;
     }
+
+    public Cliente( String nome, String email, String cep, String rua, String numero, String bairro, String cidade, String estado) {
+        this.nome = nome;
+        this.email = email;
+        this.cep = cep;
+        this.rua = rua;
+        this.numero = numero;
+        this.bairro = bairro;
+        this.cidade = cidade;
+        this.estado = estado;
+    }
 }
