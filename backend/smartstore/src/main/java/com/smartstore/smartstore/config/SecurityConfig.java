@@ -57,6 +57,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/carrinho/item/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/carrinho/item/**").authenticated()
                         .requestMatchers(HttpMethod.GET, "/cliente/me").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/cliente/atualizar").authenticated()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(
