@@ -43,6 +43,7 @@ public class ClienteService {
     public GetClienteResponseDto getDadosClienteLogado(String emailCliente) {
         Cliente cliente = clienteRepository.findByEmail(emailCliente)
                 .orElseThrow(() -> new IllegalArgumentException("Cliente não encontrado"));
+
         return new GetClienteResponseDto(
                 cliente.getNome(),
                 cliente.getEmail(),
@@ -51,7 +52,10 @@ public class ClienteService {
                 cliente.getNumero(),
                 cliente.getBairro(),
                 cliente.getCidade(),
-                cliente.getEstado()
+                cliente.getEstado(),
+                cliente.getTorceFlamengo(),
+                cliente.getAssisteOnePiece(),
+                cliente.getDeSousa()
         );
     }
 }
