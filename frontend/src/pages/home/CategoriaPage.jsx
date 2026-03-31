@@ -89,7 +89,7 @@ export default function Home() {
                       )}
 
                       <p className={`product-stock ${p.estoque > 0 ? "ok" : "off"}`}>
-                        {p.estoque > 0 ? `Em estoque: ${p.estoque}` : "IndisponÌvel"}
+                        {p.estoque > 0 ? `Em estoque: ${p.estoque}` : "Indispon√≠vel"}
                       </p>
                     </div>
                   </Link>
