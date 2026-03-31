@@ -12,5 +12,10 @@ import java.util.List;
 public class CarrinhoDto {
     private Long idCarrinho;
     private List<ItemCarrinhoDto> itens;
-    private Double total;
+
+    private Double subtotalOriginal;
+    private Double totalDesconto;
+    private Double totalFinal;
+
+    private String resumoDesconto;
 }

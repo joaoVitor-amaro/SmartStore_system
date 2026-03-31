@@ -1,13 +1,45 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
-const fmt = (v) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+const fmt = (v) =>
+  Number(v ?? 0).toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
 
 export default function Carrinho() {
   const [itens, setItens] = useState([]);
   const [carregando, setCarregando] = useState(true);
+
+  const [subtotalOriginal, setSubtotalOriginal] = useState(0);
+  const [totalDesconto, setTotalDesconto] = useState(0);
+  const [totalFinal, setTotalFinal] = useState(0);
+  const [resumoDesconto, setResumoDesconto] = useState("");
+
   const navigate = useNavigate();
+
+  const carregarCarrinho = () => {
+    const token = localStorage.getItem("token");
+
+    fetch("http://localhost:8080/carrinho/me", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        const carrinho = data.data;
+
+        setItens(carrinho?.itens || []);
+        setSubtotalOriginal(carrinho?.subtotalOriginal || 0);
+        setTotalDesconto(carrinho?.totalDesconto || 0);
+        setTotalFinal(carrinho?.totalFinal || 0);
+        setResumoDesconto(carrinho?.resumoDesconto || "");
+        setCarregando(false);
+      })
+      .catch((err) => {
+        console.error("Erro ao carregar carrinho:", err);
+        setCarregando(false);
+      });
+  };
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -17,58 +49,45 @@ export default function Carrinho() {
       return;
     }
 
-    fetch("http://localhost:8080/carrinho", {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setItens(data.data?.itens || []);
-        setCarregando(false);
-      })
-      .catch((err) => {
-        console.error(err);
-        setCarregando(false);
-      });
-  }, []);
+    carregarCarrinho();
+  }, [navigate]);
 
   const alterar = (idProduto, delta) => {
     const token = localStorage.getItem("token");
     const item = itens.find((i) => i.idProduto === idProduto);
-    const novaQuantidade = item.quantidade + delta;
 
-    if (novaQuantidade > item.estoque) return;
+    if (!item) return;
+
+    const novaQuantidade = (item.quantidade ?? 0) + delta;
+
+    if (novaQuantidade > (item.estoque ?? Infinity)) return;
     if (novaQuantidade < 0) return;
 
-    // Atualiza visualmente
-    setItens((prev) =>
-      prev
-        .map((i) => i.idProduto === idProduto ? { ...i, quantidade: novaQuantidade } : i)
-        .filter((i) => i.quantidade > 0)
-    );
-
-    fetch(`http://localhost:8080/carrinho/item/${idProduto}?quantidade=${novaQuantidade}`, {
-      method: "PUT",
-      headers: { Authorization: `Bearer ${token}` },
-    }).catch((err) => console.error("Erro ao atualizar quantidade:", err));
+    fetch(
+      `http://localhost:8080/carrinho/item/${idProduto}?quantidade=${novaQuantidade}`,
+      {
+        method: "PUT",
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    )
+      .then(() => carregarCarrinho())
+      .catch((err) => console.error("Erro ao atualizar quantidade:", err));
   };
 
   const remover = (idProduto) => {
     const token = localStorage.getItem("token");
 
-    // Remove visualmente
-    setItens((prev) => prev.filter((i) => i.idProduto !== idProduto));
-
-    // Remove no backend
     fetch(`http://localhost:8080/carrinho/item/${idProduto}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
-    }).catch((err) => console.error("Erro ao remover item:", err));
+    })
+      .then(() => carregarCarrinho())
+      .catch((err) => console.error("Erro ao remover item:", err));
   };
 
-  const subtotal = itens.reduce((acc, i) => acc + i.preco * i.quantidade, 0);
-
-  if (carregando)
+  if (carregando) {
     return <p className="text-center mt-5">Carregando carrinho...</p>;
+  }
 
   return (
     <>
@@ -87,7 +106,6 @@ export default function Carrinho() {
           </h4>
 
           <div className="row g-4">
-            {/* ===== COLUNA ITENS ===== */}
             <div className="col-12 col-lg-8">
               {itens.length === 0 ? (
                 <div className="card border-0 shadow-sm rounded-3">
@@ -97,7 +115,6 @@ export default function Carrinho() {
                 </div>
               ) : (
                 <>
-                  {/* TABELA — visível apenas em telas md+ */}
                   <div className="d-none d-md-block card shadow-sm border-0 rounded-3">
                     <div className="card-body p-0">
                       <table className="table table-hover align-middle mb-0">
@@ -146,17 +163,19 @@ export default function Carrinho() {
                                   >
                                     −
                                   </button>
+
                                   <span
                                     className="fw-semibold"
                                     style={{ minWidth: 20, textAlign: "center" }}
                                   >
                                     {item.quantidade}
                                   </span>
+
                                   <button
                                     className="btn btn-outline-secondary btn-sm rounded-circle"
                                     style={{ width: 28, height: 28, padding: 0, lineHeight: 1 }}
                                     onClick={() => alterar(item.idProduto, +1)}
-                                    disabled={item.quantidade >= item.estoque} // <- trava no limite
+                                    disabled={item.quantidade >= item.estoque}
                                   >
                                     +
                                   </button>
@@ -164,7 +183,36 @@ export default function Carrinho() {
                               </td>
 
                               <td className="fw-semibold small">
-                                {fmt(item.preco * item.quantidade)}
+                                <div>
+                                  {fmt(
+                                    item.subtotalFinal ??
+                                      ((item.preco ?? 0) * (item.quantidade ?? 0) -
+                                        (item.valorDesconto ?? 0))
+                                  )}
+                                </div>
+
+                                {(item.valorDesconto ?? 0) > 0 && (
+                                  <>
+                                    <div
+                                      className="text-decoration-line-through text-muted"
+                                      style={{ fontSize: "0.78rem" }}
+                                    >
+                                      {fmt(
+                                        item.subtotalOriginal ??
+                                          (item.preco ?? 0) * (item.quantidade ?? 0)
+                                      )}
+                                    </div>
+
+                                    <div
+                                      className="text-success"
+                                      style={{ fontSize: "0.78rem" }}
+                                    >
+                                      - {fmt(item.valorDesconto ?? 0)} (
+                                      {item.percentualDesconto ?? 0}%)
+                                    </div>
+
+                                  </>
+                                )}
                               </td>
 
                               <td>
@@ -182,7 +230,6 @@ export default function Carrinho() {
                     </div>
                   </div>
 
-                  {/* CARDS — visível apenas em telas pequenas (mobile) */}
                   <div className="d-md-none d-flex flex-column gap-3">
                     {itens.map((item) => (
                       <div
@@ -191,14 +238,18 @@ export default function Carrinho() {
                       >
                         <div className="card-body">
                           <div className="d-flex align-items-start gap-3 mb-3">
-                            <div
-                              className="rounded-3 bg-secondary flex-shrink-0"
-                              style={{ width: 52, height: 52 }}
+                            <img
+                              src={item.imagemUrl}
+                              alt={item.nomeProduto}
+                              className="rounded-3 flex-shrink-0"
+                              style={{ width: 52, height: 52, objectFit: "cover" }}
                             />
+
                             <div className="flex-grow-1">
                               <div className="fw-semibold">{item.nomeProduto}</div>
                               <div className="text-muted small">{fmt(item.preco)}</div>
                             </div>
+
                             <button
                               className="btn btn-link btn-sm text-danger p-0 text-decoration-none"
                               onClick={() => remover(item.idProduto)}
@@ -216,17 +267,47 @@ export default function Carrinho() {
                               >
                                 −
                               </button>
+
                               <span className="fw-semibold px-1">{item.quantidade}</span>
+
                               <button
                                 className="btn btn-outline-secondary btn-sm rounded-circle"
                                 style={{ width: 32, height: 32, padding: 0, lineHeight: 1 }}
                                 onClick={() => alterar(item.idProduto, +1)}
+                                disabled={item.quantidade >= item.estoque}
                               >
                                 +
                               </button>
                             </div>
-                            <div className="fw-bold text-dark">
-                              {fmt(item.preco * item.quantidade)}
+
+                            <div className="text-end fw-bold text-dark">
+                              <div>
+                                {fmt(
+                                  item.subtotalFinal ??
+                                    ((item.preco ?? 0) * (item.quantidade ?? 0) -
+                                      (item.valorDesconto ?? 0))
+                                )}
+                              </div>
+
+                              {(item.valorDesconto ?? 0) > 0 && (
+                                <>
+                                  <div className="small text-muted text-decoration-line-through">
+                                    {fmt(
+                                      item.subtotalOriginal ??
+                                        (item.preco ?? 0) * (item.quantidade ?? 0)
+                                    )}
+                                  </div>
+
+                                  <div className="small text-success">
+                                    - {fmt(item.valorDesconto ?? 0)} (
+                                    {item.percentualDesconto ?? 0}%)
+                                  </div>
+
+                                  <div className="small text-muted">
+                                    {item.motivoResumo ?? ""}
+                                  </div>
+                                </>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -237,7 +318,6 @@ export default function Carrinho() {
               )}
             </div>
 
-            {/* ===== RESUMO DO PEDIDO ===== */}
             <div className="col-12 col-lg-4">
               <div className="card shadow-sm border-0 rounded-3">
                 <div className="card-body p-4">
@@ -247,27 +327,43 @@ export default function Carrinho() {
                     <span className="text-muted">Total de Produtos</span>
                     <span>{itens.length}</span>
                   </div>
+
                   <div className="d-flex justify-content-between small mb-2">
                     <span className="text-muted">Subtotal</span>
-                    <span>{fmt(subtotal)}</span>
+                    <span>{fmt(subtotalOriginal)}</span>
+                  </div>
+
+                  <div className="d-flex justify-content-between small mb-2">
+                    <span className="text-muted">Desconto</span>
+                    <span className="text-success">- {fmt(totalDesconto)}</span>
                   </div>
 
                   <div className="d-flex justify-content-between fw-bold pt-3 mt-2 border-top">
                     <span>Total do Pedido:</span>
-                    <span>{fmt(subtotal)}</span>
+                    <span>{fmt(totalFinal)}</span>
                   </div>
 
                   <Link to="/confirmarPedido">
                     <button className="btn btn-primary w-100 mt-3 fw-semibold">
                       Finalizar Compra
                     </button>
-                </Link>
+                  </Link>
+
                   <button
                     className="btn btn-outline-primary w-100 mt-2 fw-semibold"
                     onClick={() => navigate("/")}
                   >
                     Continuar Comprando
                   </button>
+
+                  {totalDesconto > 0 && (
+                    <div
+                      className="small text-success mt-3 text-center"
+                      style={{ lineHeight: "1.4" }}
+                    >
+                      {resumoDesconto}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

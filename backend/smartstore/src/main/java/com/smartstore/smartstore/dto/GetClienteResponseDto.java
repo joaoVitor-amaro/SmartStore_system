@@ -10,7 +10,23 @@ public class GetClienteResponseDto {
     private String cidade;
     private String estado;
 
-    public GetClienteResponseDto(String nome, String email, String cep, String rua, String numero, String bairro, String cidade, String estado) {
+    private Character torceFlamengo;
+    private Character assisteOnePiece;
+    private Character deSousa;
+
+    public GetClienteResponseDto(
+            String nome,
+            String email,
+            String cep,
+            String rua,
+            String numero,
+            String bairro,
+            String cidade,
+            String estado,
+            Character torceFlamengo,
+            Character assisteOnePiece,
+            Character deSousa
+    ) {
         this.nome = nome;
         this.email = email;
         this.cep = cep;
@@ -19,37 +35,21 @@ public class GetClienteResponseDto {
         this.bairro = bairro;
         this.cidade = cidade;
         this.estado = estado;
+        this.torceFlamengo = torceFlamengo;
+        this.assisteOnePiece = assisteOnePiece;
+        this.deSousa = deSousa;
     }
 
-    public String getNome() {
-        return nome;
-    }
+    public String getNome() { return nome; }
+    public String getEmail() { return email; }
+    public String getCep() { return cep; }
+    public String getRua() { return rua; }
+    public String getNumero() { return numero; }
+    public String getBairro() { return bairro; }
+    public String getCidade() { return cidade; }
+    public String getEstado() { return estado; }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public String getCep() {
-        return cep;
-    }
-
-    public String getRua() {
-        return rua;
-    }
-
-    public String getNumero() {
-        return numero;
-    }
-
-    public String getBairro() {
-        return bairro;
-    }
-
-    public String getCidade() {
-        return cidade;
-    }
-
-    public String getEstado() {
-        return estado;
-    }
+    public Character getTorceFlamengo() { return torceFlamengo; }
+    public Character getAssisteOnePiece() { return assisteOnePiece; }
+    public Character getDeSousa() { return deSousa; }
 }

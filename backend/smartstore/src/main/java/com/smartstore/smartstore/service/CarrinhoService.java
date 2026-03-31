@@ -155,22 +155,114 @@ public class CarrinhoService {
 
     public CarrinhoDto buscarCarrinhoDoCliente(String email) {
         Cliente cliente = clienteRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("Cliente não encotrado"));
+                .orElseThrow(() -> new IllegalArgumentException("Cliente não encontrado"));
+
         Carrinho carrinho = carrinhoRepository.findByCliente(cliente)
                 .orElseThrow(() -> new IllegalArgumentException("Carrinho não encontrado"));
+
         List<ItemCarrinhoDto> itens = carrinho.getItens().stream()
-                .map(item -> new ItemCarrinhoDto(
-                        item.getProduto().getId(),
-                        item.getProduto().getNome(),
-                        item.getProduto().getImagemUrl(),
-                        item.getProduto().getPreco(),
-                        item.getQuantidade(),
-                        item.getProduto().getPreco() * item.getQuantidade()
-                ))
+                .map(item -> {
+                    Double subtotalOriginal = item.getProduto().getPreco() * item.getQuantidade();
+
+                    List<DescontoAplicadoDto> descontos = montarDescontosDoCliente(cliente, subtotalOriginal);
+                    Double percentualDesconto = somarPercentual(descontos);
+                    Double valorDesconto = somarValorDesconto(descontos);
+                    Double subtotalFinal = subtotalOriginal - valorDesconto;
+
+                    return new ItemCarrinhoDto(
+                            item.getProduto().getId(),
+                            item.getProduto().getNome(),
+                            item.getProduto().getImagemUrl(),
+                            item.getProduto().getPreco(),
+                            item.getQuantidade(),
+                            subtotalOriginal,
+                            percentualDesconto,
+                            valorDesconto,
+                            subtotalFinal,
+                            descontos,
+                            montarResumoMotivos(descontos)
+                    );
+                })
                 .toList();
-        Double total = itens.stream()
-                .mapToDouble(ItemCarrinhoDto::getSubtotal)
+
+        Double subtotalOriginal = itens.stream()
+                .mapToDouble(ItemCarrinhoDto::getSubtotalOriginal)
                 .sum();
-        return new CarrinhoDto(carrinho.getId(), itens, total);
+
+        Double totalDesconto = itens.stream()
+                .mapToDouble(ItemCarrinhoDto::getValorDesconto)
+                .sum();
+
+        Double totalFinal = itens.stream()
+                .mapToDouble(ItemCarrinhoDto::getSubtotalFinal)
+                .sum();
+
+        String resumoDesconto = itens.stream()
+                .flatMap(i -> i.getDescontosAplicados().stream())
+                .map(DescontoAplicadoDto::getMotivo)
+                .distinct()
+                .reduce((a, b) -> a + "; " + b)
+                .orElse("Nenhum desconto aplicado");
+
+        return new CarrinhoDto(
+                carrinho.getId(),
+                itens,
+                subtotalOriginal,
+                totalDesconto,
+                totalFinal,
+                resumoDesconto
+        );
+    }
+    private List<DescontoAplicadoDto> montarDescontosDoCliente(Cliente cliente, Double subtotalItem) {
+        List<DescontoAplicadoDto> descontos = new java.util.ArrayList<>();
+
+        if (cliente.getTorceFlamengo() != null && cliente.getTorceFlamengo() == 'S') {
+            descontos.add(new DescontoAplicadoDto(
+                    "Desconto aplicado por torcer para o Flamengo",
+                    10.0,
+                    subtotalItem * 0.10
+            ));
+        }
+
+        if (cliente.getAssisteOnePiece() != null && cliente.getAssisteOnePiece() == 'S') {
+            descontos.add(new DescontoAplicadoDto(
+                    "Desconto aplicado por assistir One Piece",
+                    5.0,
+                    subtotalItem * 0.05
+            ));
+        }
+
+        if (cliente.getDeSousa() != null && cliente.getDeSousa() == 'S') {
+            descontos.add(new DescontoAplicadoDto(
+                    "Desconto aplicado por ser De Sousa",
+                    7.0,
+                    subtotalItem * 0.07
+            ));
+        }
+
+        return descontos;
+    }
+
+    private Double somarPercentual(List<DescontoAplicadoDto> descontos) {
+        return descontos.stream()
+                .mapToDouble(DescontoAplicadoDto::getPercentual)
+                .sum();
+    }
+
+    private Double somarValorDesconto(List<DescontoAplicadoDto> descontos) {
+        return descontos.stream()
+                .mapToDouble(DescontoAplicadoDto::getValor)
+                .sum();
+    }
+
+    private String montarResumoMotivos(List<DescontoAplicadoDto> descontos) {
+        if (descontos.isEmpty()) {
+            return "Nenhum desconto aplicado";
+        }
+
+        return descontos.stream()
+                .map(DescontoAplicadoDto::getMotivo)
+                .reduce((a, b) -> a + "; " + b)
+                .orElse("Nenhum desconto aplicado");
     }
 }
