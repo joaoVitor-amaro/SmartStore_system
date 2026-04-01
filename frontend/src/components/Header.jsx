@@ -106,13 +106,22 @@ export default function Header({ categorias = [] }) {
                 <span className="fw-semibold" style={{ fontSize: "0.9rem" }}>
                   Olá, {localStorage.getItem("nome") || email?.split("@")[0]}
                 </span>
-                <Link
-                  to="/meusProdutos"
-                  className="text-muted"
-                  style={{ fontSize: "0.75rem" }}
-                >
-                  Meus Produtos
-                </Link>
+                <div className="d-flex flex-column align-items-end">
+                  <Link
+                    to="/meusProdutos"
+                    className="text-muted text-decoration-none"
+                    style={{ fontSize: "0.75rem" }}
+                  >
+                    Meus Produtos
+                  </Link>
+                  <Link
+                    to="/minhas-compras"
+                    className="text-muted text-decoration-none"
+                    style={{ fontSize: "0.75rem" }}
+                  >
+                    Minhas Compras
+                  </Link>
+                </div>
               </div>
 
               <Link
