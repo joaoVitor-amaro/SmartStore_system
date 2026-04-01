@@ -13,6 +13,7 @@ import DetalheProduto from "./pages/detalheProdutos/DetalheProduto";
 import Carrinho from "./pages/carrinho/Carrinho";
 import ConfirmOrder from "./pages/checkout/ConfirmOrder";
 import "bootstrap-icons/font/bootstrap-icons.css";
+import ConfirmarPagamento from "./pages/confirmarPagamento/ConfirmarPagamento";
 
 function App() {
   const { categorias } = useCategorias();
@@ -33,6 +34,7 @@ function App() {
             <Route path="/cadastrarProduto" element={<CadastrarProduto categorias={categorias} />} />
             <Route path="/carrinho" element={<Carrinho />} />
             <Route path="/confirmarPedido" element={<ConfirmOrder />} />
+            <Route path="/pagamento" element={<ConfirmarPagamento />}/>
           </Routes>
         </main>
       </div>
