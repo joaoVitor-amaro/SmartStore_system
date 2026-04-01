@@ -20,8 +20,8 @@ public class Carrinho {
     @Column(nullable = false)
     private String status;
 
-    @OneToOne
-    @JoinColumn(name = "idCliente", nullable = false)
+    @ManyToOne                                        // ✅ era @OneToOne
+    @JoinColumn(name = "id_cliente", nullable = false) // ✅ corrigido o nome da coluna
     private Cliente cliente;
 
     @OneToMany(mappedBy = "carrinho", cascade = CascadeType.ALL)
