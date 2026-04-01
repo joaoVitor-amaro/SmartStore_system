@@ -1,5 +1,6 @@
 import Header from "../components/Header"
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 
 export default function CadastroUsuario() {
@@ -8,6 +9,7 @@ export default function CadastroUsuario() {
     const [loading, setLoading] = useState(false);   
     const [error, setError] = useState(null);         
     const [sucesso, setSucesso] = useState(null); 
+    const navigate = useNavigate();
     const ESTADOS = [
         "AC","AL","AP","AM","BA","CE","DF","ES","GO","MA",
         "MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN",
@@ -75,8 +77,10 @@ export default function CadastroUsuario() {
                 throw new Error(mensagens);
             }
             setSucesso("Usuário cadastrado com sucesso!");
-            setTimeout(() => setSucesso(null), 3000);
-            console.log("Cliente cadastrado:", data.data);
+            setTimeout(() => {
+                setSucesso(null);
+                navigate("/login");
+            }, 3000);
         } catch(err) {
              setError(err.message);
             setTimeout(() => setError(null), 3000);
