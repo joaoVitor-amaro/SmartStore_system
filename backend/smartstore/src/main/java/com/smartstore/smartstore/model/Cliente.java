@@ -45,8 +45,8 @@ public class Cliente {
     @OneToMany(mappedBy = "vendedor")
     private List<Produto> produtos;
 
-    @OneToOne(mappedBy = "cliente", cascade = CascadeType.ALL)
-    private Carrinho carrinho;
+    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
+    private List<Carrinho> carrinhos;  // era: private Carrinho carrinho
 
     @OneToMany(mappedBy = "cliente")
     private List<Compra> compras;
