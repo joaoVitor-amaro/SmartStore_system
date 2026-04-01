@@ -278,7 +278,6 @@ export default function DetalheProduto() {
 
           <div className="acoes-produto">
             <button type="button" className="btn-carrinho" onClick={adicionarAoCarrinho}>Adicionar ao Carrinho</button>
-            <button type="button" className="btn-comprar">Comprar Agora</button>
           </div>
 
           <div className="descricao-box">
