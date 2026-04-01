@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import Breadcrumb from "../../components/Breadcrumb/Breadcrumb";
 import FiltrosSidebar from "../../components/FiltrosSidebar";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
@@ -180,6 +182,81 @@ export default function MyProducts() {
     setEditForm((prev) => ({ ...prev, [name]: value }));
   };
 
+
+
+  const handleGerarRelatorio = async () => {
+    const token = localStorage.getItem("token");
+    const res = await fetch("http://localhost:8080/relatorio", {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const json = await res.json();
+    const { resumo, produtos } = json.data;
+    const doc = new jsPDF();
+    const fmt = (n) =>
+      Number(n).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+    // ── Cabeçalho ──
+    doc.setFontSize(18);
+    doc.setTextColor(13, 110, 253);
+    doc.text("SmartStore", 14, 18);
+    doc.setFontSize(12);
+    doc.setTextColor(40);
+    doc.text("Relatório Gerencial de Vendas", 14, 26);
+    doc.setFontSize(9);
+    doc.setTextColor(120);
+    doc.text(`Vendedor: ${resumo.nomeVendedor}`, 14, 32);
+    doc.text(`Gerado em: ${new Date().toLocaleString("pt-BR")}`, 14, 37);
+    const cards = [
+      { label: "Produtos cadastrados", value: resumo.totalProdutosCadastrados },
+      { label: "Unidades vendidas",    value: resumo.totalUnidadesVendidas },
+      { label: "Receita total",        value: fmt(resumo.receitaTotal) },
+      { label: "Ticket médio",         value: fmt(resumo.ticketMedio) },
+    ];
+    cards.forEach((card, i) => {
+      const x = 14 + (i % 2) * 95;
+      const y = 44 + Math.floor(i / 2) * 22;
+      doc.setFillColor(240, 246, 255);
+      doc.roundedRect(x, y, 88, 18, 3, 3, "F");
+      doc.setFontSize(8);
+      doc.setTextColor(100);
+      doc.text(card.label, x + 4, y + 7);
+      doc.setFontSize(11);
+      doc.setTextColor(13, 110, 253);
+      doc.text(String(card.value), x + 4, y + 14);
+    });
+    autoTable(doc, {
+      startY: 92,
+      head: [["Produto", "Categoria", "Marca", "Preço", "Estoque", "Vendidos", "Receita"]],
+      body: produtos.map((p) => [
+        p.nome,
+        p.categoria,
+        p.marca,
+        fmt(p.preco),
+        p.estoqueAtual,
+        p.quantidadeVendida,
+        fmt(p.receitaGerada),
+      ]),
+      headStyles: { fillColor: [13, 110, 253] },
+      alternateRowStyles: { fillColor: [245, 248, 255] },
+      styles: { fontSize: 9 },
+      columnStyles: {
+        6: { fontStyle: "bold", textColor: [25, 135, 84] }, // receita em verde
+      },
+
+    });
+    const pageCount = doc.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFontSize(8);
+      doc.setTextColor(180);
+      doc.text(
+        `Página ${i} de ${pageCount}`,
+        14,
+        doc.internal.pageSize.height - 8
+      );
+    }
+    doc.save(`relatorio-${new Date().toISOString().slice(0, 10)}.pdf`);
+  };
+
   return (
     <div className="container my-4">
       {sucesso && (
@@ -214,7 +291,7 @@ export default function MyProducts() {
               <Link to="/cadastrarProduto">
                 <button className="btn btn-primary">+ Cadastrar Produto</button>
               </Link>
-              <button className="btn btn-secondary">Gerar Relatório (PDF)</button>
+              <button className="btn btn-secondary" onClick={handleGerarRelatorio}>Gerar Relatório (PDF)</button>
             </div>
           </div>
 
