@@ -22,7 +22,13 @@ public class Compra {
     private Double valorTotal;
 
     @Column(nullable = false)
+    private String status;
+
+    @Column(nullable = false)
     private LocalDateTime data;
+
+    @Column(nullable = false)
+    private String metodoPagamento;
 
     @ManyToOne
     @JoinColumn(name = "idCliente", nullable = false)

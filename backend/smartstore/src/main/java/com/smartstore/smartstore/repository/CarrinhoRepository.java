@@ -8,4 +8,5 @@ import java.util.Optional;
 
 public interface CarrinhoRepository extends JpaRepository<Carrinho, Long> {
     Optional<Carrinho> findByCliente(Cliente cliente);
+    Optional<Carrinho> findByClienteAndStatus(Cliente cliente, String status);
 }

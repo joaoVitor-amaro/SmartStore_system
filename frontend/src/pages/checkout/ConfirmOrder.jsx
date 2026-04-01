@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "./ConfirmOrder.css";
 
 const deliveryOptions = [
@@ -26,6 +27,7 @@ export default function ConfirmOrder() {
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState(null);
   const [products, setProducts] = useState([]);
+  const navigate = useNavigate();
 
   const [resumoFinanceiro, setResumoFinanceiro] = useState({
     subtotalOriginal: 0,
@@ -147,8 +149,15 @@ export default function ConfirmOrder() {
           if (!data.success) throw new Error(data.message ?? "Erro ao atualizar");
 
           // navegar para pagamento
-          // navigate("/pagamento", { state: { total } });
-          alert("Dados atualizados! Ir para pagamento...");
+          navigate("/pagamento", {
+            state: {
+              subtotal,
+              frete,
+              desconto,
+              resumoDesconto: resumoFinanceiro.resumoDesconto,
+              items: products,   // passa os itens completos com desconto por item
+            },
+          });
 
       } catch (err) {
           alert("Erro: " + err.message);
