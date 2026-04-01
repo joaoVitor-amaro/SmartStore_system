@@ -42,12 +42,12 @@ public class CarrinhoService {
             throw new IllegalArgumentException("Estoque insuficiente");
         }
 
-        Carrinho carrinho = carrinhoRepository.findByCliente(cliente)
+        Carrinho carrinho = carrinhoRepository.findByClienteAndStatus(cliente, "ABERTO")
                 .orElseGet(() -> {
-                        Carrinho novo = new Carrinho();
-                        novo.setCliente(cliente);
-                        novo.setStatus("ABERTO");
-                        return carrinhoRepository.save(novo);
+                    Carrinho novo = new Carrinho();
+                    novo.setCliente(cliente);
+                    novo.setStatus("ABERTO");
+                    return carrinhoRepository.save(novo);
                 });
         Optional<ItemCarrinho> itemExistente = itemCarrinhoRepository
                 .findByCarrinhoAndProduto(carrinho, produto);
@@ -93,7 +93,7 @@ public class CarrinhoService {
         Cliente cliente = clienteRepository.findByEmail(emailCliente)
                 .orElseThrow(() -> new IllegalArgumentException("Cliente não encontrado"));
 
-        Carrinho carrinho = carrinhoRepository.findByCliente(cliente)
+        Carrinho carrinho = carrinhoRepository.findByClienteAndStatus(cliente, "ABERTO")
                 .orElse(null);
 
         if (carrinho == null) {
@@ -123,7 +123,7 @@ public class CarrinhoService {
     public void atualizarQuantidade(String emailCliente, Long idProduto, Integer quantidade) {
         Cliente cliente = clienteRepository.findByEmail(emailCliente)
                 .orElseThrow(() -> new IllegalArgumentException("Cliente não encontrado"));
-        Carrinho carrinho = carrinhoRepository.findByCliente(cliente)
+        Carrinho carrinho = carrinhoRepository.findByClienteAndStatus(cliente, "ABERTO")
                 .orElseThrow(() -> new IllegalArgumentException("Carrinho não encontrado"));
         Produto produto = produtoRepository.findById(idProduto)
                 .orElseThrow(() -> new IllegalArgumentException("Produto não encontrado"));
@@ -144,7 +144,7 @@ public class CarrinhoService {
     public void deletarCarrinho(String emailCliente, Long idProduto) {
         Cliente cliente = clienteRepository.findByEmail(emailCliente)
                 .orElseThrow(() -> new IllegalArgumentException("Cliente não encontrado"));
-        Carrinho carrinho = carrinhoRepository.findByCliente(cliente)
+        Carrinho carrinho = carrinhoRepository.findByClienteAndStatus(cliente, "ABERTO")
                 .orElseThrow(() -> new IllegalArgumentException("Carrinho não encontrado"));
         Produto produto = produtoRepository.findById(idProduto)
                 .orElseThrow(() -> new IllegalArgumentException("Produto não encontrado"));
@@ -157,7 +157,7 @@ public class CarrinhoService {
         Cliente cliente = clienteRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("Cliente não encontrado"));
 
-        Carrinho carrinho = carrinhoRepository.findByCliente(cliente)
+        Carrinho carrinho = carrinhoRepository.findByClienteAndStatus(cliente, "ABERTO")
                 .orElseThrow(() -> new IllegalArgumentException("Carrinho não encontrado"));
 
         List<ItemCarrinhoDto> itens = carrinho.getItens().stream()
