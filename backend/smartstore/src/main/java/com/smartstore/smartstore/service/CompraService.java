@@ -43,16 +43,12 @@ public class CompraService {
         Carrinho carrinho = carrinhoRepository.findByClienteAndStatus(cliente, "ABERTO")
                 .orElseThrow(() -> new IllegalArgumentException("Carrinho não encontrado"));
 
-        return jdbcTemplate.execute(
-                (java.sql.Connection con) -> {
-                    java.sql.CallableStatement cs = con.prepareCall("CALL realizar_compra(?, ?, ?, ?)");
-                    cs.setLong(1, carrinho.getId());
-                    cs.setDouble(2, dto.getValorTotal());
-                    cs.setString(3, dto.getMetodoPagamento());
-                    cs.registerOutParameter(4, java.sql.Types.BIGINT);
-                    cs.execute();
-                    return cs.getLong(4);
-                }
+        return jdbcTemplate.queryForObject(
+                "SELECT realizar_compra(?, ?, ?)",
+                Long.class,
+                carrinho.getId(),
+                dto.getValorTotal(),
+                dto.getMetodoPagamento()
         );
     }
 
