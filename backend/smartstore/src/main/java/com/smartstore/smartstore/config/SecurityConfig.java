@@ -47,8 +47,7 @@ public class SecurityConfig {
                                 "/produtos/home",
                                 "/produtos/buscar",
                                 "/produtos/categoria/**",
-                                "/produtos/*",
-                                "/produtos/*/avaliacoes"
+                                "/produtos"
                         ).permitAll()
 
                         .requestMatchers(HttpMethod.POST, "/produtos/cadastro").authenticated()
@@ -58,6 +57,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/carrinho/item/**").authenticated()
                         .requestMatchers(HttpMethod.GET, "/cliente/me").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/cliente/atualizar").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/finalizar").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/produtos/*/avaliacoes").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/produtos/*/avaliacoes").authenticated()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(

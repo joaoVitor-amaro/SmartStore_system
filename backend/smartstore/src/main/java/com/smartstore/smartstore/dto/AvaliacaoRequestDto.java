@@ -4,7 +4,6 @@ public class AvaliacaoRequestDto {
 
     private Integer nota;
     private String comentario;
-    private Long clienteId;
 
     public AvaliacaoRequestDto() {
     }
@@ -25,11 +24,4 @@ public class AvaliacaoRequestDto {
         this.comentario = comentario;
     }
 
-    public Long getClienteId() {
-        return clienteId;
-    }
-
-    public void setClienteId(Long clienteId) {
-        this.clienteId = clienteId;
-    }
 }

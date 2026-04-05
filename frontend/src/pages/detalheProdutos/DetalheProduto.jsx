@@ -5,6 +5,7 @@ import Breadcrumb from "../../components/Breadcrumb/Breadcrumb";
 import "./DetalheProduto.css";
 
 export default function DetalheProduto() {
+  const token = localStorage.getItem("token");
   const { id } = useParams();
 
   const [produto, setProduto] = useState(null);
@@ -29,8 +30,6 @@ export default function DetalheProduto() {
 
 
   async function adicionarAoCarrinho() {
-    const token = localStorage.getItem("token");
-
     if (!token) {
       showToast("Você precisa está logado", "erro");
       setTimeout(() => navigate("/login"), 1500);
@@ -143,22 +142,29 @@ export default function DetalheProduto() {
     const comentarioLimpo = novoComentario.trim();
 
     if (!comentarioLimpo) {
-      alert("Escreva um comentário antes de enviar.");
+      showToast("Escreva um comentário antes de enviar.", "erro");
+      return;
+    }
+
+    if (!token) {
+      showToast("Faça login para avaliar", "erro");
+      setTimeout(() => navigate("/login"), 1500);
       return;
     }
 
     try {
+
       setEnviandoAvaliacao(true);
 
       const resposta = await fetch(`http://localhost:8080/produtos/${id}/avaliacoes`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
         },
         body: JSON.stringify({
           nota: novaNota,
-          comentario: comentarioLimpo,
-          clienteId: 1
+          comentario: comentarioLimpo
         })
       });
 
@@ -170,9 +176,12 @@ export default function DetalheProduto() {
       setNovaNota(5);
 
       await recarregarAvaliacoes();
+
+      showToast("Avaliação enviada!", "sucesso");
+
     } catch (error) {
       console.error(error);
-      alert("Não foi possível enviar a avaliação.");
+      showToast("Não foi possível enviar a avaliação.", "erro");
     } finally {
       setEnviandoAvaliacao(false);
     }

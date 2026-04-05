@@ -12,6 +12,7 @@ import com.smartstore.smartstore.repository.ClienteRepository;
 import com.smartstore.smartstore.repository.CompraRepository;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+import java.math.BigDecimal;
 
 import java.util.Collections;
 import java.util.List;
@@ -47,7 +48,7 @@ public class CompraService {
                 "SELECT realizar_compra(?, ?, ?)",
                 Long.class,
                 carrinho.getId(),
-                dto.getValorTotal(),
+                BigDecimal.valueOf(dto.getValorTotal()),
                 dto.getMetodoPagamento()
         );
     }

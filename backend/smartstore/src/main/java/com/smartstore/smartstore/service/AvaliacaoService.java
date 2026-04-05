@@ -30,11 +30,11 @@ public class AvaliacaoService {
         this.clienteRepository = clienteRepository;
     }
 
-    public AvaliacaoResponseDto cadastrar(Long produtoId, AvaliacaoRequestDto dto) {
+    public AvaliacaoResponseDto cadastrar(Long produtoId, AvaliacaoRequestDto dto, String email) {
         Produto produto = produtoRepository.findById(produtoId)
                 .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
 
-        Cliente cliente = clienteRepository.findById(dto.getClienteId())
+        Cliente cliente = clienteRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
 
         Avaliacao avaliacao = new Avaliacao(
