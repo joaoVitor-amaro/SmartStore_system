@@ -19,7 +19,7 @@ const fmt = (v) =>
     currency: "BRL",
   });
 
-const BASE_URL = "http://localhost:8080";
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function ConfirmOrder() {
   const [delivery, setDelivery] = useState("standard");
@@ -59,8 +59,8 @@ export default function ConfirmOrder() {
         };
 
         const [resCliente, resCarrinho] = await Promise.all([
-          fetch(`${BASE_URL}/cliente/me`, { headers }),
-          fetch(`${BASE_URL}/carrinho/me`, { headers }),
+          fetch(`${API_URL}/cliente/me`, { headers }),
+          fetch(`${API_URL}/carrinho/me`, { headers }),
         ]);
 
         const [jsonCliente, jsonCarrinho] = await Promise.all([
@@ -130,7 +130,7 @@ export default function ConfirmOrder() {
               Authorization: `Bearer ${token}`,
           };
 
-          const res = await fetch(`${BASE_URL}/cliente/atualizar`, {
+          const res = await fetch(`${API_URL}/cliente/atualizar`, {
               method: "PUT",
               headers,
               body: JSON.stringify({

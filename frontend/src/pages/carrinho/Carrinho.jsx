@@ -7,6 +7,8 @@ const fmt = (v) =>
     currency: "BRL",
   });
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 export default function Carrinho() {
   const [itens, setItens] = useState([]);
   const [carregando, setCarregando] = useState(true);
@@ -21,7 +23,7 @@ export default function Carrinho() {
   const carregarCarrinho = () => {
     const token = localStorage.getItem("token");
 
-    fetch("http://localhost:8080/carrinho/me", {
+    fetch(`${API_URL}/carrinho/me`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
@@ -64,7 +66,7 @@ export default function Carrinho() {
     if (novaQuantidade < 0) return;
 
     fetch(
-      `http://localhost:8080/carrinho/item/${idProduto}?quantidade=${novaQuantidade}`,
+      `${API_URL}/carrinho/item/${idProduto}?quantidade=${novaQuantidade}`,
       {
         method: "PUT",
         headers: { Authorization: `Bearer ${token}` },
@@ -77,7 +79,7 @@ export default function Carrinho() {
   const remover = (idProduto) => {
     const token = localStorage.getItem("token");
 
-    fetch(`http://localhost:8080/carrinho/item/${idProduto}`, {
+    fetch(`${API_URL}/carrinho/item/${idProduto}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
     })

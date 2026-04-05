@@ -3,6 +3,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 export default function CadastroUsuario() {
     const [mostrarSenha, setMostrarSenha] = useState(false);
     const [mostrarConfirmar, setMostrarConfirmar] = useState(false);
@@ -61,7 +63,7 @@ export default function CadastroUsuario() {
         };
         setLoading(true);
         setError(null);
-        const URL_API = "http://localhost:8080/cliente/cadastro";
+        const URL_API = `${API_URL}/cliente/cadastro`;
         try {
             const response = await fetch(URL_API, {
                 method: "POST",

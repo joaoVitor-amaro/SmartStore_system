@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import "./FiltrosSidebar.css";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 export default function FiltrosSidebar({
   mostrarEstoqueBaixo = false,
   filtrosAtuais,
@@ -19,7 +21,7 @@ export default function FiltrosSidebar({
   });
 
   useEffect(() => {
-    fetch("http://localhost:8080/api/categorias")
+    fetch(`${API_URL}/api/categorias`)
       .then((res) => res.json())
       .then((data) => setCategorias(data))
       .catch((err) => console.error(err));
@@ -29,14 +31,14 @@ export default function FiltrosSidebar({
     const categoriaObj = categorias.find((cat) => cat.nome === filtros.categoria);
 
     if (!categoriaObj) {
-      fetch("http://localhost:8080/marcas")
+      fetch(`${API_URL}/marcas`)
         .then((res) => res.json())
         .then((data) => setMarcas(data))
         .catch((err) => console.error(err));
       return;
     }
 
-    fetch(`http://localhost:8080/marcas/categoria/${categoriaObj.id}`)
+    fetch(`${API_URL}/marcas/categoria/${categoriaObj.id}`)
       .then((res) => res.json())
       .then((data) => setMarcas(data))
       .catch((err) => console.error(err));

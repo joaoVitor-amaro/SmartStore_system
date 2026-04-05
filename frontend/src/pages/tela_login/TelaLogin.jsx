@@ -3,6 +3,8 @@ import { FaEnvelope, FaEye, FaEyeSlash } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import "./TelaLogin.css";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 export default function TelaLogin() {
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const [senha, setSenha] = useState("");
@@ -15,7 +17,7 @@ export default function TelaLogin() {
     setErro("");
 
     try {
-      const response = await fetch("http://localhost:8080/auth/login", {
+      const response = await fetch(`${API_URL}/auth/login`, {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({email, senha}),

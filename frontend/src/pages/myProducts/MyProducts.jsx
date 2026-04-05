@@ -11,6 +11,8 @@ const formatCurrency = (value) =>
     currency: "BRL"
   }).format(value);
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 export default function MyProducts() {
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState({});
@@ -36,7 +38,7 @@ export default function MyProducts() {
   useEffect(() => {
     const token = localStorage.getItem("token");
 
-    fetch("http://localhost:8080/produtos/meus", {
+    fetch(`${API_URL}/produtos/meus`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -54,7 +56,7 @@ const atualizarStatusVenda = async (itemCompraId, statusEntrega) => {
     const token = localStorage.getItem("token");
 
     const res = await fetch(
-      `http://localhost:8080/compras/vendedor/item/${itemCompraId}/status`,
+      `${API_URL}/compras/vendedor/item/${itemCompraId}/status`,
       {
         method: "PUT",
         headers: {
