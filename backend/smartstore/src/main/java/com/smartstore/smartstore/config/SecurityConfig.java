@@ -63,6 +63,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/finalizar").authenticated()
                         .requestMatchers(HttpMethod.GET, "/produtos/*/avaliacoes").permitAll()
                         .requestMatchers(HttpMethod.POST, "/produtos/*/avaliacoes").authenticated()
+                        .requestMatchers("/health").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(
