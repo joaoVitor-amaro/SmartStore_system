@@ -4,6 +4,8 @@ import Breadcrumb from "../../components/Breadcrumb/Breadcrumb.jsx";
 import FiltrosSidebar from "../../components/FiltrosSidebar.jsx";
 import "./Home.css";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 export default function Home() {
   const [produtos, setProdutos] = useState([]);
   const location = useLocation();
@@ -29,8 +31,8 @@ export default function Home() {
     const query = params.toString();
 
     const urlFinal = query
-      ? `http://localhost:8080/produtos/buscar?${query}`
-      : "http://localhost:8080/produtos/home";
+      ? `${API_URL}/produtos/buscar?${query}`
+      : `${API_URL}/produtos/home`;
 
     fetch(urlFinal)
       .then((res) => res.json())

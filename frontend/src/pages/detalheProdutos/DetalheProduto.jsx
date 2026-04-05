@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import Breadcrumb from "../../components/Breadcrumb/Breadcrumb";
 import "./DetalheProduto.css";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 export default function DetalheProduto() {
   const token = localStorage.getItem("token");
   const { id } = useParams();
@@ -37,7 +39,7 @@ export default function DetalheProduto() {
     }
 
     try {
-      const res = await fetch("http://localhost:8080/carrinho/adicionar", {
+      const res = await fetch(`${API_URL}/carrinho/adicionar`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -74,8 +76,8 @@ export default function DetalheProduto() {
         setErro("");
 
         const [resProduto, resAvaliacoes] = await Promise.all([
-          fetch(`http://localhost:8080/produtos/${id}`),
-          fetch(`http://localhost:8080/produtos/${id}/avaliacoes`)
+          fetch(`${API_URL}/produtos/${id}`),
+          fetch(`${API_URL}/produtos/${id}/avaliacoes`)
         ]);
 
         if (!resProduto.ok) {
@@ -128,7 +130,7 @@ export default function DetalheProduto() {
   }
 
   async function recarregarAvaliacoes() {
-    const resposta = await fetch(`http://localhost:8080/produtos/${id}/avaliacoes`);
+    const resposta = await fetch(`${API_URL}/produtos/${id}/avaliacoes`);
 
     if (!resposta.ok) {
       throw new Error("Erro ao atualizar avaliações.");
@@ -156,7 +158,7 @@ export default function DetalheProduto() {
 
       setEnviandoAvaliacao(true);
 
-      const resposta = await fetch(`http://localhost:8080/produtos/${id}/avaliacoes`, {
+      const resposta = await fetch(`${API_URL}/produtos/${id}/avaliacoes`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

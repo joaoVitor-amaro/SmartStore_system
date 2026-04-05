@@ -14,6 +14,8 @@ const initialForm = {
   imagemPreview: null,
 };
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 export default function CadastrarProduto({categorias = []}) {
   const [form, setForm] = useState(initialForm);
   const [erros, setErros] = useState({});
@@ -28,7 +30,7 @@ export default function CadastrarProduto({categorias = []}) {
     }
     try {
       const response = await fetch(
-        `http://localhost:8080/marcas/categoria/${categoriaId}`
+        `${API_URL}/marcas/categoria/${categoriaId}`
       );
       const data = await response.json();
       setMarcas(data);
@@ -59,11 +61,11 @@ export default function CadastrarProduto({categorias = []}) {
   const validar = () => {
     const novosErros = {};
     if (!form.nome.trim())       novosErros.nome      = "Informe o nome do produto.";
-    if (!form.descricao.trim())  novosErros.descricao = "Informe a descriÃ§Ã£o.";
+    if (!form.descricao.trim())  novosErros.descricao = "Informe a descrição.";
     if (!form.categoria)         novosErros.categoria = "Selecione uma categoria.";
     if (!form.marca)             novosErros.marca     = "Selecione uma marca.";
-    if (!form.fabricado.trim())  novosErros.fabricado = "Informe o local de fabricaÃ§Ã£o.";
-    if (!form.preco)             novosErros.preco     = "Informe o preÃ§o.";
+    if (!form.fabricado.trim())  novosErros.fabricado = "Informe o local de fabricação.";
+    if (!form.preco)             novosErros.preco     = "Informe o preço.";
     if (!form.quantidade)        novosErros.quantidade = "Informe a quantidade.";
     if (!form.imagem)            novosErros.imagem    = "Adicione uma imagem.";
     return novosErros;
@@ -87,9 +89,9 @@ export default function CadastrarProduto({categorias = []}) {
       formData.append("marcaId", parseInt(form.marca));
       formData.append("categoriaId", parseInt(form.categoria));
 
-      const token = localStorage.getItem("token"); // pega o token do login
+      const token = localStorage.getItem("token"); 
 
-      const res = await fetch("http://localhost:8080/produtos/cadastro", {
+      const res = await fetch(`${API_URL}/produtos/cadastro`, {
         method: "POST",
         body: formData,
         headers: {

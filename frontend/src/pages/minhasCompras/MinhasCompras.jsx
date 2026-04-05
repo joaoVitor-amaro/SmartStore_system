@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./MinhasCompras.css";
 
-const BASE_URL = "http://localhost:8080";
+const API_URL = import.meta.env.VITE_API_URL;
 
 const fmtMoeda = (valor) =>
   Number(valor ?? 0).toLocaleString("pt-BR", {
@@ -44,7 +44,7 @@ export default function MinhasCompras() {
         setLoading(true);
         setErro("");
 
-        const res = await fetch(`${BASE_URL}/compra/minhas`, {
+        const res = await fetch(`${API_URL}/compra/minhas`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
