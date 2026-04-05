@@ -47,7 +47,7 @@ public class SecurityConfig {
                                 "/produtos/home",
                                 "/produtos/buscar",
                                 "/produtos/categoria/**",
-                                "/produtos"
+                                "/produtos/*"
                         ).permitAll()
 
                         .requestMatchers(HttpMethod.POST, "/produtos/cadastro").authenticated()
