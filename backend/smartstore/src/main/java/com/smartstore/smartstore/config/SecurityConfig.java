@@ -34,6 +34,7 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/health").permitAll()
                         .requestMatchers("/auth/login", "/cliente/cadastro").permitAll()
                         .requestMatchers("/imagens/**").permitAll()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
@@ -63,7 +64,6 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/finalizar").authenticated()
                         .requestMatchers(HttpMethod.GET, "/produtos/*/avaliacoes").permitAll()
                         .requestMatchers(HttpMethod.POST, "/produtos/*/avaliacoes").authenticated()
-                        .requestMatchers("/health").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(
