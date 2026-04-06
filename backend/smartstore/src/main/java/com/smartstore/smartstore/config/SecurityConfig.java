@@ -62,6 +62,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/cliente/me").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/cliente/atualizar").authenticated()
                         .requestMatchers(HttpMethod.POST, "/finalizar").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/relatorio").authenticated()
                         .requestMatchers(HttpMethod.GET, "/produtos/*/avaliacoes").permitAll()
                         .requestMatchers(HttpMethod.POST, "/produtos/*/avaliacoes").authenticated()
                         .anyRequest().authenticated()
