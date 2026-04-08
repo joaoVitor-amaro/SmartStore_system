@@ -208,7 +208,7 @@ const atualizarStatusVenda = async (itemCompraId, statusEntrega) => {
     try {
       const token = localStorage.getItem("token");
 
-      const res = await fetch(`http://localhost:8080/produtos/${editingId}`, {
+      const res = await fetch(`${API_URL}/produtos/${editingId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -252,7 +252,7 @@ const atualizarStatusVenda = async (itemCompraId, statusEntrega) => {
       const token = localStorage.getItem("token");
 
       const res = await fetch(
-        `http://localhost:8080/produtos/${produtoParaExcluir.id}`,
+        `${API_URL}/produtos/${produtoParaExcluir.id}`,
         {
           method: "DELETE",
           headers: {
