@@ -65,6 +65,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/relatorio").authenticated()
                         .requestMatchers(HttpMethod.GET, "/produtos/*/avaliacoes").permitAll()
                         .requestMatchers(HttpMethod.POST, "/produtos/*/avaliacoes").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/produtos/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(
