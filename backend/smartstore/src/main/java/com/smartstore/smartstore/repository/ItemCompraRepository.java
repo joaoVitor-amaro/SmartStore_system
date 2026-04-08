@@ -26,4 +26,5 @@ public interface ItemCompraRepository extends JpaRepository<ItemCompra, Long> {
 
 
     List<ItemCompra> findByProdutoAndCompra_Status(Produto produto, String status);
+    void deleteByProdutoId(Long id);
 }
