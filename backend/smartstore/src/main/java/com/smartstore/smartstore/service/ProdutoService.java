@@ -12,6 +12,7 @@ import com.smartstore.smartstore.repository.ProdutoCatalogoView;
 import com.smartstore.smartstore.repository.*;
 import com.smartstore.smartstore.dto.MeusProdutosResponseDto;
 import com.smartstore.smartstore.dto.ProdutoUpdateRequestDto;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,12 +30,16 @@ public class ProdutoService {
     private final ClienteRepository clienteRepository;
     private final MarcaRepository marcaRepository;
     private final CategoriaRepository categoriaRepository;
+    private final AvaliacaoRepository avaliacaoRepository;
+    private final ItemCompraRepository itemCompraRepository;
 
-    public ProdutoService(ProdutoRepository produtoRepository, ClienteRepository clienteRepository, MarcaRepository marcaRepository, CategoriaRepository categoriaRepository) {
+    public ProdutoService(ProdutoRepository produtoRepository, ClienteRepository clienteRepository, MarcaRepository marcaRepository, CategoriaRepository categoriaRepository, AvaliacaoRepository avaliacaoRepository, ItemCompraRepository itemCompraRepository) {
         this.produtoRepository = produtoRepository;
         this.clienteRepository = clienteRepository;
         this.marcaRepository = marcaRepository;
         this.categoriaRepository = categoriaRepository;
+        this.avaliacaoRepository = avaliacaoRepository;
+        this.itemCompraRepository = itemCompraRepository;
     }
 
     public List<ProdutoHomeResponseDto> listarProdutosHome() {
@@ -131,6 +136,7 @@ public class ProdutoService {
 
     }
 
+    @Transactional
     public void excluirProduto(Long id, String email) {
         Produto produto = produtoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
@@ -138,7 +144,8 @@ public class ProdutoService {
         if (produto.getVendedor() == null || !produto.getVendedor().getEmail().equals(email)) {
             throw new RuntimeException("Você não tem permissão para excluir este produto");
         }
-
+        avaliacaoRepository.deleteByProdutoId(id);
+        itemCompraRepository.deleteByProdutoId(id);
         produtoRepository.delete(produto);
     }
 
