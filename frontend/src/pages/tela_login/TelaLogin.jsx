@@ -9,31 +9,50 @@ export default function TelaLogin() {
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const [senha, setSenha] = useState("");
   const [email, setEmail] = useState("");
-  const [erro, setErro] = useState("");
+  const [erroEmail, setErroEmail] = useState("");
+  const [erroSenha, setErroSenha] = useState("");
   const navigate = useNavigate();
 
   async function handleSubmit(e) {
     e.preventDefault();
-    setErro("");
+
+    setErroEmail("");
+    setErroSenha("");
+
+    let temErro = false;
+
+    if (!email.trim()) {
+      setErroEmail("Informe o email");
+      temErro = true;
+    }
+
+    if (!senha.trim()) {
+      setErroSenha("Informe a senha");
+      temErro = true;
+    }
+
+    if (temErro) return;
 
     try {
       const response = await fetch(`${API_URL}/auth/login`, {
         method: "POST",
         headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({email, senha}),
+        body: JSON.stringify({ email, senha }),
       });
 
-      if(!response) {
-        setErro("Email ou senha inválidos");
+      if (!response.ok) {
+        setErroSenha("Email ou senha inválidos");
         return;
       }
+
       const data = await response.json();
+
       localStorage.setItem("token", data.token);
       localStorage.setItem("email", data.email);
+
       navigate("/");
-      window.location.reload();
     } catch (err){
-      setErro("Erro ao conectar com o servidor");
+      setErroEmail("Erro ao conectar com o servidor");
     }
   }
 
@@ -53,7 +72,6 @@ export default function TelaLogin() {
                 id="email"
                 type="email"
                 placeholder="Digite seu email"
-                autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
@@ -62,16 +80,18 @@ export default function TelaLogin() {
               </span>
             </div>
 
+            {erroEmail && <p className="erro-texto">{erroEmail}</p>}
+
             <label htmlFor="senha">Senha</label>
             <div className="input-wrapper">
               <input
                 id="senha"
                 type={mostrarSenha ? "text" : "password"}
                 placeholder="Digite sua senha"
-                autoComplete="current-password"
                 value={senha}
                 onChange={(e) => setSenha(e.target.value)}
               />
+
               <button
                 type="button"
                 className="icon-button"
@@ -80,6 +100,8 @@ export default function TelaLogin() {
                 {mostrarSenha ? <FaEyeSlash /> : <FaEye />}
               </button>
             </div>
+
+            {erroSenha && <p className="erro-texto">{erroSenha}</p>}
 
             <button type="submit" className="login-button">
               Entrar

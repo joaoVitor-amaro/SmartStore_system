@@ -115,6 +115,11 @@ a {
   font-size: 0.95rem;
 }
 
+.erro-texto {
+  color: #d93025;
+  font-size: 0.85rem;
+}
+
 @media (max-width: 768px) {
   .main-content {
     padding: 30px 14px;
