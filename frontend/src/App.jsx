@@ -15,6 +15,7 @@ import ConfirmOrder from "./pages/checkout/ConfirmOrder";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import ConfirmarPagamento from "./pages/confirmarPagamento/ConfirmarPagamento";
 import MinhasCompras from "./pages/minhasCompras/MinhasCompras";
+import NovaSenha from "./pages/novaSenha/NovaSenha";
 
 function App() {
   const { categorias } = useCategorias();
@@ -37,6 +38,7 @@ function App() {
             <Route path="/confirmarPedido" element={<ConfirmOrder />} />
             <Route path="/pagamento" element={<ConfirmarPagamento />} />
             <Route path="/minhas-compras" element={<MinhasCompras />} />
+            <Route path="/nova-senha" element={<NovaSenha />} />
           </Routes>
         </main>
       </div>

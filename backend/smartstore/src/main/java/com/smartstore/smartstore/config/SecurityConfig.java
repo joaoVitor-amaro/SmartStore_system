@@ -66,6 +66,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/produtos/*/avaliacoes").permitAll()
                         .requestMatchers(HttpMethod.POST, "/produtos/*/avaliacoes").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/produtos/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/auth/recuperar-senha").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/auth/nova-senha").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(
