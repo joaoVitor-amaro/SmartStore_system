@@ -3,9 +3,12 @@ import { Link } from "react-router-dom";
 import Breadcrumb from "../../components/Breadcrumb/Breadcrumb";
 import FiltrosSidebar from "../../components/FiltrosSidebar";
 import { jsPDF } from "jspdf";
-import autoTable from "jspdf-autotable";
+import jsPDFAutoTable from "jspdf-autotable";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
+
+const autoTable =
+  typeof jsPDFAutoTable === "function" ? jsPDFAutoTable : jsPDFAutoTable.default;
 
 const formatCurrency = (value) =>
   new Intl.NumberFormat("pt-BR", {
@@ -53,94 +56,36 @@ export default function MyProducts() {
       .catch((err) => console.error(err));
   }, []);
 
-const atualizarStatusVenda = async (itemCompraId, statusEntrega) => {
-  try {
-    const token = localStorage.getItem("token");
+  const atualizarStatusVenda = async (itemCompraId, statusEntrega) => {
+    try {
+      const token = localStorage.getItem("token");
 
-    const res = await fetch(
-      `${API_URL}/compras/vendedor/item/${itemCompraId}/status`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({ statusEntrega })
-      }
-    );
+      const res = await fetch(
+        `${API_URL}/compras/vendedor/item/${itemCompraId}/status`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+          },
+          body: JSON.stringify({ statusEntrega })
+        }
+      );
 
-    if (!res.ok) throw new Error("Erro ao atualizar status");
+      if (!res.ok) throw new Error("Erro ao atualizar status");
 
-    setVendas((prev) =>
-      prev.map((v) =>
-        v.itemCompraId === itemCompraId ? { ...v, statusEntrega } : v
-      )
-    );
+      setVendas((prev) =>
+        prev.map((v) =>
+          v.itemCompraId === itemCompraId ? { ...v, statusEntrega } : v
+        )
+      );
 
-    setSucesso("Status da entrega atualizado com sucesso!");
-    setTimeout(() => setSucesso(""), 3000);
-  } catch (error) {
-    console.error(error);
-  }
-};
-
-<div className="card shadow-sm mb-4">
-  <div className="card-body">
-    <h4 className="mb-3">Vendas recebidas</h4>
-
-    {vendas.length === 0 ? (
-      <p className="text-muted mb-0">Nenhuma venda recebida ainda.</p>
-    ) : (
-      <div className="d-flex flex-column gap-3">
-        {vendas.map((venda) => (
-          <div
-            key={venda.itemCompraId}
-            className="border rounded p-3 d-flex justify-content-between align-items-center flex-wrap gap-3"
-          >
-            <div className="d-flex align-items-center gap-3">
-              {venda.imagemUrl && (
-                <img
-                  src={venda.imagemUrl}
-                  alt={venda.produtoNome}
-                  style={{ width: 64, height: 64, objectFit: "cover", borderRadius: 8 }}
-                />
-              )}
-
-              <div>
-                <div className="fw-semibold">{venda.produtoNome}</div>
-                <div className="small text-muted">Comprador: {venda.compradorNome}</div>
-                <div className="small text-muted">Qtd: {venda.quantidade}</div>
-                <div className="small text-muted">
-                  {new Date(venda.dataCompra).toLocaleString("pt-BR")}
-                </div>
-              </div>
-            </div>
-
-            <div className="d-flex align-items-center gap-2 flex-wrap">
-              <span className="badge text-bg-secondary">{venda.statusEntrega}</span>
-
-              <button
-                className="btn btn-outline-primary btn-sm"
-                onClick={() => atualizarStatusVenda(venda.itemCompraId, "A_CAMINHO")}
-                disabled={venda.statusEntrega === "A_CAMINHO" || venda.statusEntrega === "ENTREGUE"}
-              >
-                Marcar como a caminho
-              </button>
-
-              <button
-                className="btn btn-outline-success btn-sm"
-                onClick={() => atualizarStatusVenda(venda.itemCompraId, "ENTREGUE")}
-                disabled={venda.statusEntrega === "ENTREGUE"}
-              >
-                Marcar como entregue
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
-    )}
-  </div>
-</div>
+      setSucesso("Status da entrega atualizado com sucesso!");
+      setTimeout(() => setSucesso(""), 3000);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const produtosFiltrados = useMemo(() => {
     let lista = [...produtos];
@@ -273,77 +218,90 @@ const atualizarStatusVenda = async (itemCompraId, statusEntrega) => {
   };
 
   const handleGerarRelatorio = async () => {
-    const token = localStorage.getItem("token");
-    const res = await fetch(`${API_URL}/relatorio`, {
-      headers: {Authorization: `Bearer ${token}`}
-    });
-    const json = await res.json();
-    const {resumo, produtos} = json.data;
-    const doc = new jsPDF();
-    const fmt = (n) =>
-      Number(n).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-    // ── Cabeçalho ──
-    doc.setFontSize(18);
-    doc.setTextColor(13, 110, 253);
-    doc.text("SmartStore", 14, 18);
-    doc.setFontSize(12);
-    doc.setTextColor(40);
-    doc.text("Relatório Gerencial de Vendas", 14, 26);
-    doc.setFontSize(9);
-    doc.setTextColor(120);
-    doc.text(`Vendedor: ${resumo.nomeVendedor}`, 14, 32);
-    doc.text(`Gerado em: ${new Date().toLocaleString("pt-BR")}`, 14, 37);
-    const cards = [
-      { label: "Produtos cadastrados", value: resumo.totalProdutosCadastrados },
-      { label: "Unidades vendidas",    value: resumo.totalUnidadesVendidas },
-      { label: "Receita total",        value: fmt(resumo.receitaTotal) },
-      { label: "Ticket médio",         value: fmt(resumo.ticketMedio) },
-    ];
-    cards.forEach((card, i) => {
-      const x = 14 + (i % 2) * 95;
-      const y = 44 + Math.floor(i / 2) * 22;
-      doc.setFillColor(240, 246, 255);
-      doc.roundedRect(x, y, 88, 18, 3, 3, "F");
-      doc.setFontSize(8);
-      doc.setTextColor(100);
-      doc.text(card.label, x + 4, y + 7);
-      doc.setFontSize(11);
-      doc.setTextColor(13, 110, 253);
-      doc.text(String(card.value), x + 4, y + 14);
-    });
-    autoTable(doc, {
-      startY: 92,
-      head: [["Produto", "Categoria", "Marca", "Preço", "Estoque", "Vendidos", "Receita"]],
-      body: produtos.map((p) => [
-        p.nome,
-        p.categoria,
-        p.marca,
-        fmt(p.preco),
-        p.estoqueAtual,
-        p.quantidadeVendida,
-        fmt(p.receitaGerada),
-      ]),
-      headStyles: { fillColor: [13, 110, 253] },
-      alternateRowStyles: { fillColor: [245, 248, 255] },
-      styles: { fontSize: 9 },
-      columnStyles: {
-        6: { fontStyle: "bold", textColor: [25, 135, 84] }, // receita em verde
-      },
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${API_URL}/relatorio`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
 
-    });
-    const pageCount = doc.getNumberOfPages();
-    for (let i = 1; i <= pageCount; i++) {
-      doc.setPage(i);
-      doc.setFontSize(8);
-      doc.setTextColor(180);
-      doc.text(
-        `Página ${i} de ${pageCount}`,
-        14,
-        doc.internal.pageSize.height - 8
-      );
+      if (!res.ok) throw new Error("Erro ao gerar relatório");
+
+      const json = await res.json();
+      const { resumo, produtos } = json.data;
+      const doc = new jsPDF();
+      const fmt = (n) =>
+        Number(n).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+
+      // ── Cabeçalho ──
+      doc.setFontSize(18);
+      doc.setTextColor(13, 110, 253);
+      doc.text("SmartStore", 14, 18);
+      doc.setFontSize(12);
+      doc.setTextColor(40);
+      doc.text("Relatório Gerencial de Vendas", 14, 26);
+      doc.setFontSize(9);
+      doc.setTextColor(120);
+      doc.text(`Vendedor: ${resumo.nomeVendedor}`, 14, 32);
+      doc.text(`Gerado em: ${new Date().toLocaleString("pt-BR")}`, 14, 37);
+
+      const cards = [
+        { label: "Produtos cadastrados", value: resumo.totalProdutosCadastrados },
+        { label: "Unidades vendidas",    value: resumo.totalUnidadesVendidas },
+        { label: "Receita total",        value: fmt(resumo.receitaTotal) },
+        { label: "Ticket médio",         value: fmt(resumo.ticketMedio) },
+      ];
+      cards.forEach((card, i) => {
+        const x = 14 + (i % 2) * 95;
+        const y = 44 + Math.floor(i / 2) * 22;
+        doc.setFillColor(240, 246, 255);
+        doc.roundedRect(x, y, 88, 18, 3, 3, "F");
+        doc.setFontSize(8);
+        doc.setTextColor(100);
+        doc.text(card.label, x + 4, y + 7);
+        doc.setFontSize(11);
+        doc.setTextColor(13, 110, 253);
+        doc.text(String(card.value), x + 4, y + 14);
+      });
+
+      autoTable(doc, {
+        startY: 92,
+        head: [["Produto", "Categoria", "Marca", "Preço", "Estoque", "Vendidos", "Receita"]],
+        body: produtos.map((p) => [
+          p.nome,
+          p.categoria,
+          p.marca,
+          fmt(p.preco),
+          p.estoqueAtual,
+          p.quantidadeVendida,
+          fmt(p.receitaGerada),
+        ]),
+        headStyles: { fillColor: [13, 110, 253] },
+        alternateRowStyles: { fillColor: [245, 248, 255] },
+        styles: { fontSize: 9 },
+        columnStyles: {
+          6: { fontStyle: "bold", textColor: [25, 135, 84] }, // receita em verde
+        },
+      });
+
+      const pageCount = doc.getNumberOfPages();
+      for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFontSize(8);
+        doc.setTextColor(180);
+        doc.text(
+          `Página ${i} de ${pageCount}`,
+          14,
+          doc.internal.pageSize.height - 8
+        );
+      }
+
+      doc.save(`relatorio-${new Date().toISOString().slice(0, 10)}.pdf`);
+    } catch (error) {
+      console.error(error);
+      setSucesso("");
+      alert("Não foi possível gerar o relatório. Tente novamente.");
     }
-    doc.save(`relatorio-${new Date().toISOString().slice(0, 10)}.pdf`);
-  }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
