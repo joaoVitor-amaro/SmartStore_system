@@ -32,14 +32,16 @@ public class ProdutoService {
     private final CategoriaRepository categoriaRepository;
     private final AvaliacaoRepository avaliacaoRepository;
     private final ItemCompraRepository itemCompraRepository;
+    private final CloudinaryService cloudinaryService;
 
-    public ProdutoService(ProdutoRepository produtoRepository, ClienteRepository clienteRepository, MarcaRepository marcaRepository, CategoriaRepository categoriaRepository, AvaliacaoRepository avaliacaoRepository, ItemCompraRepository itemCompraRepository) {
+    public ProdutoService(ProdutoRepository produtoRepository, ClienteRepository clienteRepository, MarcaRepository marcaRepository, CategoriaRepository categoriaRepository, AvaliacaoRepository avaliacaoRepository, ItemCompraRepository itemCompraRepository, CloudinaryService cloudinaryService) {
         this.produtoRepository = produtoRepository;
         this.clienteRepository = clienteRepository;
         this.marcaRepository = marcaRepository;
         this.categoriaRepository = categoriaRepository;
         this.avaliacaoRepository = avaliacaoRepository;
         this.itemCompraRepository = itemCompraRepository;
+        this.cloudinaryService = cloudinaryService;
     }
 
     public List<ProdutoHomeResponseDto> listarProdutosHome() {
@@ -124,10 +126,16 @@ public class ProdutoService {
             produto.setImagemUrl(urlImagem);
         }
         produtoRepository.save(produto);
-        return new ProdutoCreateResponseDto(produtoDto, emailCliente);
+        ProdutoCreateResponseDto response = new ProdutoCreateResponseDto(produtoDto, emailCliente);
+        response.setImagemUrl(produto.getImagemUrl());
+        return response;
     }
 
     private String salvarImagem(MultipartFile imagem) throws Exception {
+        if (cloudinaryService.estaConfigurado()) {
+            return cloudinaryService.upload(imagem.getBytes(), imagem.getOriginalFilename());
+        }
+
         String nomeArquivo = UUID.randomUUID() + "_" + imagem.getOriginalFilename();
         Path caminho = Paths.get(PASTA_UPLOAD + nomeArquivo);
         Files.createDirectories(caminho.getParent());

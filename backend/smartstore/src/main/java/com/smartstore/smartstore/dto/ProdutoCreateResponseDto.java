@@ -1,7 +1,5 @@
 package com.smartstore.smartstore.dto;
 
-import org.springframework.web.multipart.MultipartFile;
-
 public class ProdutoCreateResponseDto {
     private String nome;
     private String descricao;
@@ -25,7 +23,7 @@ public class ProdutoCreateResponseDto {
         this.preco = produtoDto.getPreco();
         this.estoque = produtoDto.getEstoque();
         this.fabricadoEm = produtoDto.getFabricadoEm();
-        this.imagemUrl = produtoDto.getImagem() != null ? produtoDto.getImagem().getOriginalFilename() : null;
+        this.imagemUrl = null;
         this.marcaId = produtoDto.getMarcaId();
         this.categoriaId = produtoDto.getCategoriaId();
         this.email = emai;
@@ -53,6 +51,10 @@ public class ProdutoCreateResponseDto {
 
     public String getImagemUrl() {
         return imagemUrl;
+    }
+
+    public void setImagemUrl(String imagemUrl) {
+        this.imagemUrl = imagemUrl;
     }
 
     public Long getMarcaId() {
