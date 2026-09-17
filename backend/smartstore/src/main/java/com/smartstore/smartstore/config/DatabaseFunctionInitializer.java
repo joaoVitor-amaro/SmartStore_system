@@ -1,5 +1,7 @@
 package com.smartstore.smartstore.config;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -7,6 +9,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class DatabaseFunctionInitializer implements ApplicationRunner {
+
+    private static final Logger log = LoggerFactory.getLogger(DatabaseFunctionInitializer.class);
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -16,7 +20,8 @@ public class DatabaseFunctionInitializer implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
-        jdbcTemplate.execute("""
+        try {
+            jdbcTemplate.execute("""
                 CREATE OR REPLACE FUNCTION public.realizar_compra(
                     p_carrinho_id bigint,
                     p_valor_total numeric,
@@ -88,5 +93,8 @@ public class DatabaseFunctionInitializer implements ApplicationRunner {
                 END;
                 $$;
                 """);
+        } catch (Exception e) {
+            log.warn("Nao foi possivel criar a function realizar_compra: {}", e.getMessage());
+        }
     }
 }
