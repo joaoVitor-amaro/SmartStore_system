@@ -70,10 +70,10 @@ export default function ConfirmarPagamento() {
         }),
       });
 
-      const data = await res.json();
+      const data = await res.json().catch(() => null);
 
-      if (!data.success) {
-        throw new Error(data.message ?? "Erro ao finalizar compra");
+      if (!res.ok || !data || !data.success) {
+        throw new Error(data?.message ?? `Erro ao finalizar compra (HTTP ${res.status})`);
       }
 
       setAprovado(true);
