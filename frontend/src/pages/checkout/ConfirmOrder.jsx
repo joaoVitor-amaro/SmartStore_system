@@ -19,7 +19,7 @@ const fmt = (v) =>
     currency: "BRL",
   });
 
-const API_URL = "http://localhost:8080";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
 export default function ConfirmOrder() {
   const [delivery, setDelivery] = useState("standard");

@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Breadcrumb from "../../components/Breadcrumb/Breadcrumb";
 import "./DetalheProduto.css";
 
-const API_URL = "http://localhost:8080";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
 export default function DetalheProduto() {
   const token = localStorage.getItem("token");

@@ -3,7 +3,7 @@ import { FaEnvelope, FaEye, FaEyeSlash, FaTimes } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import "./TelaLogin.css";
 
-const API_URL = "http://localhost:8080";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
 export default function TelaLogin() {
   const [mostrarSenha, setMostrarSenha] = useState(false);
