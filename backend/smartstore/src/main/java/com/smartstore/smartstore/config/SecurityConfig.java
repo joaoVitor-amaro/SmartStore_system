@@ -51,7 +51,8 @@ public class SecurityConfig {
                                 "/produtos/home",
                                 "/produtos/buscar",
                                 "/produtos/categoria/**",
-                                "/produtos/*"
+                                "/produtos/*",
+                                "/imagens/**"
                         ).permitAll()
 
                         .requestMatchers(HttpMethod.POST, "/produtos/cadastro").authenticated()

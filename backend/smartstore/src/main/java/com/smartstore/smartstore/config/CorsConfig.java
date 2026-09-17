@@ -18,9 +18,9 @@ public class CorsConfig {
 
         config.setAllowCredentials(true);
 
-        config.setAllowedOrigins(List.of(
-                "http://localhost:3000",
-                "https://smartstore-system-app.netlify.app" // <-- adicione sua URL do Netlify
+        config.setAllowedOriginPatterns(List.of(
+                "http://localhost:*",
+                "http://127.0.0.1:*"
         ));
 
         config.addAllowedHeader("*");
